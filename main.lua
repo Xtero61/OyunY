@@ -1,6 +1,7 @@
 local enet = require("enet")
 local inspect = require("inspect")
-local debug_prefix = "[ SRVR ]"
+local veri = require("veri")
+local debug_prefix = "[ SERVER ]"
 
 local Sunucu = {
   ag = {
@@ -22,20 +23,27 @@ function Sunucu:ready()
 end
 
 function Sunucu.id_gonder(kanal, id)
-  local data = love.data.pack("data", "bb", 2, id)
-  kanal:send(data:getString())
+  local v = veri:yeni()
+  v:bayt_ekle(2)
+  v:bayt_ekle(id)
+  v:paketle()
+  kanal:send(v.ham_veri:getString())
   Sunucu:ekrana_yaz("id gonderildi " .. tostring(id))
 end
 
 function Sunucu:mesaj_isle(mesaj)
-      local mesaj_turu, yer = love.data.unpack("b", mesaj)
-      local id, x, y
-      if mesaj_turu == 0 then
-        id, x, y = love.data.unpack("bff", mesaj, yer)
-      end
+  local v = veri:yeni()
+  v.ham_veri = mesaj
+  v:coz()
+  local mesaj_turu = v.veriler[1]
+  if mesaj_turu == 0 then
+    local id = v.veriler[2]
+    local x = v.veriler[3]
+    local y = v.veriler[4]
+    self.oyuncular[id].x = x
+    self.oyuncular[id].y = y
+  end
 
-      self.oyuncular[id].x = x
-      self.oyuncular[id].y = y
 end
 
 function Sunucu:olay_isle(olay)
@@ -49,16 +57,16 @@ function Sunucu:olay_isle(olay)
 end
 
 function Sunucu:milleti_bilgilendir()
-    local mesaj = ""
-    local veri = love.data.pack("data", "bJ", 1, #self.oyuncular)
-    mesaj = mesaj .. veri:getString()
+    local v = veri:yeni()
+    v:bayt_ekle(1):u32_ekle(#self.oyuncular)
     for _, oyuncu in pairs(self.oyuncular) do
-      veri = love.data.pack("data", "bff",
-                            oyuncu.id, oyuncu.x,
-                            oyuncu.y)
-      mesaj = mesaj .. veri:getString()
+      v:bayt_ekle(oyuncu.id)
+      :f32_ekle(oyuncu.x)
+      :f32_ekle(oyuncu.y)
     end
-    self.ag.kapi:broadcast(mesaj)
+    v:paketle()
+    local g_pkt = v.ham_veri:getString()
+    self.ag.kapi:broadcast(g_pkt)
 end
 
 function Sunucu:update(dt)
@@ -66,8 +74,8 @@ function Sunucu:update(dt)
   while olay do
     Sunucu:olay_isle(olay)
     olay = self.ag.kapi:service()
-    Sunucu:milleti_bilgilendir()
   end
+    Sunucu:milleti_bilgilendir()
 end
 
 function Sunucu:oyuncu_ekle(gelen_kanal)
