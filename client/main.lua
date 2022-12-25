@@ -1,4 +1,5 @@
 local SUNUCU_ADRESI = "127.0.0.1:6161"
+-- local SUNUCU_ADRESI = "192.168.1.133:6161"
 local enet = require("enet")
 local inspect = require("inspect")
 local veri = require("veri")
@@ -42,21 +43,22 @@ function love.update(dt)
          elseif event.type == "receive" then
             -- print("Mesaj alindi " .. inspect.inspect(event))
             local v = veri:yeni()
-            v.ham_veri = event.data
-            v:coz()
-            local msg_turu = v.veriler[1]
+                          :ham_veri_ayarla(event.data)
+                          :getir_tablo()
+
+            local msg_turu = v[1]
             if msg_turu == 2 then
-               ben.net.id = v.veriler[2]
+               ben.net.id = v[2]
             elseif msg_turu == 1 then
-               local oyuncu_sayisi = v.veriler[2]
+               local oyuncu_sayisi = v[2]
                local pid, x, y, idx
                idx = 3
                for i = 1, oyuncu_sayisi do
-                  pid = v.veriler[idx]
+                  pid = v[idx]
                   idx = idx + 1
-                  x = v.veriler[idx]
+                  x = v[idx]
                   idx = idx + 1
-                  y = v.veriler[idx]
+                  y = v[idx]
                   idx = idx + 1
 
                   if pid ~= ben.net.id then
@@ -91,12 +93,13 @@ function love.update(dt)
       end
 
       if ben.net.id then
-         local v = veri:yeni()
-         v:bayt_ekle(0):
-            bayt_ekle(ben.net.id):
-            f32_ekle(ben.x):
-            f32_ekle(ben.y):paketle()
-         ben.net.server:send(v.ham_veri:getString())
+         local pkt = veri:yeni()
+                         :bayt_ekle(0)
+                         :bayt_ekle(ben.net.id)
+                         :f32_ekle(ben.x)
+                         :f32_ekle(ben.y)
+                         :getir_paket()
+         ben.net.server:send(pkt)
       end
   end
 
@@ -111,4 +114,6 @@ function love.draw()
    for _, oyuncu in pairs(players) do
       love.graphics.rectangle("fill", oyuncu.x, oyuncu.y, 20, 20)
    end
+   love.graphics.setColor(0, 0, 1)
+   love.graphics.print(tostring(love.timer.getFPS()))
 end
