@@ -1,6 +1,7 @@
 local enet = require("enet")
 local inspect = require("inspect")
 local veri = require("veri")
+local mesaj = require("mesaj")
 
 local Sunucu = {
   ag = {
@@ -33,7 +34,7 @@ function Sunucu:getir_bagli_oyuncu_sayisi()
 end
 
 function Sunucu:ekrana_yaz(yazi)
-  print("\27[101;94m[" .. tostring(math.ceil(love.timer.getTime()*1000)) .. "]\27[0m" .. " " .. yazi)
+  print("\27[101;94m[" .. tostring(math.ceil(love.timer.getTime() * 1000)) .. "]\27[0m" .. " " .. yazi)
 end
 
 function Sunucu.id_gonder(kanal, id)
@@ -42,8 +43,8 @@ function Sunucu.id_gonder(kanal, id)
   Sunucu:ekrana_yaz("id gonderildi " .. tostring(id))
 end
 
-function Sunucu:mesaj_isle(mesaj)
-  local v = veri:yeni():ham_veri_ayarla(mesaj):getir_tablo()
+function Sunucu:mesaj_isle(gelen_mesaj)
+  local v = veri:yeni():ham_veri_ayarla(gelen_mesaj):getir_tablo()
   local mesaj_turu = v[1]
   if mesaj_turu == 0 then
     local id = v[2]
