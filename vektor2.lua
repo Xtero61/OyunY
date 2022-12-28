@@ -4,6 +4,9 @@ local Vektor2 = {
   y = 0
 }
 Vektor2.__index = Vektor2
+setmetatable(Vektor2, {__call = function (_, g_x, g_y)
+  return Vektor2:yeni{x = g_x, y = g_y}
+end})
 
 function Vektor2:yeni(o)
   o = o or {
@@ -12,6 +15,11 @@ function Vektor2:yeni(o)
   }
   setmetatable(o, self)
   return o
+end
+
+function Vektor2:__call(g_x, g_y)
+  print("_call called")
+  return Vektor2:yeni{ x = g_x, y = g_y }
 end
 
 function Vektor2:__newindex(indeks)
@@ -155,6 +163,14 @@ function Vektor2_test()
       error("", 2)
     end
   end, "Vektör ekrana yazdırma")
+  test(function ()
+    local vec = Vektor2(3, 5)
+    if vec.x == 3 and vec.y == 5 then
+      return true
+    else
+      error("", 2)
+    end
+  end, "Vektor2() constructor fonksiyonu")
   test(function ()
     v.x = 10
     v.y = 10
