@@ -4,10 +4,16 @@ local Vektor2 = {
   y = 0
 }
 Vektor2.__index = Vektor2
+
 setmetatable(Vektor2, {__call = function (_, g_x, g_y)
   return Vektor2:yeni{x = g_x, y = g_y}
 end})
 
+local function yeterince_esit(x, y, esik)
+  esik = esik or 0.00001
+  return math.abs(x - y) < esik
+end
+  
 function Vektor2:yeni(o)
   o = o or {
     x = 0,
@@ -49,6 +55,9 @@ function Vektor2:__mul(b)
   if type(b) == "number" then
     t.x = self.x * b
     t.y = self.y * b
+  elseif type(b) == "table" then
+    t.x = self.x * b.x
+    t.y = self.y * b.y
   else
     error("Vektör yalnızca rasyonel sayılar ile çarpılabilir")
   end
@@ -71,6 +80,10 @@ function Vektor2:__div(b)
   return t
 end
 
+function Vektor2:__eq(v)
+  return yeterince_esit(self.x, v.x) and yeterince_esit(self.y, v.y)
+end
+
 function Vektor2:abs()
   return Vektor2:yeni{
     x = math.abs(self.x),
@@ -79,8 +92,7 @@ function Vektor2:abs()
 end
 
 function Vektor2:length()
-  return (math.sqrt(self.x ^ 2 + self.y ^ 2))
-
+  return (math.sqrt(math.pow(self.x, 2) + math.pow(self.y, 2)))
 end
 
 function Vektor2:normalized()
@@ -107,7 +119,7 @@ end
 
 function Vektor2:move_toward(v2, delta)
   local vec = (v2 - self):normalized() * delta
-  if vec + self <= v2:length() then
+  if (vec + self):length() <= v2:length() then
     return vec + self
   else
     return v2
@@ -118,11 +130,12 @@ function Vektor2:project(v2)
   if v2:length() == 0 then
     return nil
   end
-  return (self:dot(v2:normalized()) / (v2:length() ^ 2)) * v2
+  return v2:normalized() * (self:dot(v2) / (v2:length()))
 end
 
-function Vektor2:reflect(v2)
-  return (self - (2 * (self:dot(v2:normalized())) * v2:normalized()))
+function Vektor2:reflect(v)
+  local normal = Vektor2(v.y, -v.x)
+  return (self - (self * normal:normalized() * normal:normalized() * 2 ))
 end
 
 function Vektor2:dot(v2)
@@ -130,7 +143,10 @@ function Vektor2:dot(v2)
 end
 
 function Vektor2:angle_to(v)
-  return math.acos(self:dot(v))
+  if self:length() == 0 or v:length() == 0 then
+    return nil
+  end
+  return math.acos(self:dot(v) / (self:length() * v:length()))
 end
 
 -- Yazılan vektör fonksiyonlarının doğru çalışıp
@@ -267,16 +283,16 @@ function Vektor2_test()
     end
   end, "Vektor2:move_toward()")
   test(function ()
-    local vec = Vektor2:yeni{ x = 1, y = 2 }:project(Vektor2:yeni{ x = 6, y = 8 })
-    if vec.x == 1.32 and vec.y == 1.76 then
+    local vec = (Vektor2:yeni{ x = 3, y = 2 }):project(Vektor2:yeni{ x = 5, y = 5 })
+    if yeterince_esit(vec.x, 2.5) and yeterince_esit(vec.y, 2.5) then
       return true
     else
       error("", 2)
     end
   end, "Vektor2:project()")
   test(function ()
-    local vec = Vektor2:yeni{ x = 7, y = 2 }:reflect(Vektor2:yeni{ x = 1, y = 0 })
-    if vec.x == 7 and vec.y == -2 then
+    local vec = Vektor2:yeni{ x = 6, y = 2 }:reflect(Vektor2:yeni{ x = 0, y = 1 })
+    if yeterince_esit(vec.x, -6) and yeterince_esit(vec.y, 2) then
       return true
     else
       error("", 2)
@@ -291,8 +307,8 @@ function Vektor2_test()
     end
   end, "Vektor2:dot()")
   test(function ()
-    local angle = Vektor2:yeni{ x = 7, y = 2 }:angle_to(Vektor2:yeni{ x = 1, y = 0 })
-    if angle == -0.2783 then
+    local angle = Vektor2:yeni{ x = 7, y = 2 }:angle_to(Vektor2:yeni{ x = 1, y = 5 })
+    if yeterince_esit(angle, 1.095101) then
       return true
     else
       error("", 2)
@@ -301,6 +317,5 @@ function Vektor2_test()
 
   print("Yapılan Test Sayısı: " .. test_sayisi .. " -> başarılı: " .. basarili .. ", başarısız: " .. basarisiz)
 end
-
 -- Vektor2_test()
 return Vektor2
