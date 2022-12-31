@@ -13,7 +13,7 @@ local function yeterince_esit(x, y, esik)
   esik = esik or 0.00001
   return math.abs(x - y) < esik
 end
-  
+
 function Vektor2:yeni(o)
   o = o or {
     x = 0,
@@ -80,8 +80,21 @@ function Vektor2:__div(b)
   return t
 end
 
+function Vektor2:__unm()
+   self.x = -self.x
+   self.y = -self.y
+end
+
 function Vektor2:__eq(v)
   return yeterince_esit(self.x, v.x) and yeterince_esit(self.y, v.y)
+end
+
+function Vektor2:__lt(v)
+  return (self:length() < v:length())
+end
+
+function Vektor2:__le(v)
+  return (self:length() <= v:length())
 end
 
 function Vektor2:abs()
@@ -93,6 +106,12 @@ end
 
 function Vektor2:length()
   return (math.sqrt(math.pow(self.x, 2) + math.pow(self.y, 2)))
+end
+
+function Vektor2:sifirla()
+  self.x = 0
+  self.y = 0
+  return self
 end
 
 function Vektor2:normalized()
