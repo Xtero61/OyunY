@@ -1,7 +1,7 @@
 local enet = require("enet")
 local inspect = require("inspect")
 local veri = require("veri")
-
+-- TODO: sunucuya versiyon kontrolü ekle
 local Sunucu = {
   ag = {
     kapi = nil,

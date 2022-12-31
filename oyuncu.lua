@@ -6,7 +6,6 @@ local vektor2 = require("vektor2")
 local veri = require("veri")
 players = {}
 
-
 local oyuncu = {
     isim = "oyuncu",
     hiz = 100,
@@ -83,7 +82,7 @@ end
 
 function oyuncu:olay_isle(olay)
     if olay.type == "connect" then
-        --print("baglanti başarılı")
+        print("baglanti başarılı")
     elseif olay.type == "receive" then
         -- print("Mesaj alindi " .. inspect.inspect(event))
         local v = veri:yeni()
@@ -92,13 +91,13 @@ function oyuncu:olay_isle(olay)
 
         local msg_turu = v[1]
         if msg_turu == 2 then
+	    assert(v[2] ~= 0)
             self.ag.id = v[2]
         elseif msg_turu == 1 then
             local oyuncu_sayisi = v[2]
-            print(oyuncu_sayisi)
             local pid, x, y, idx
             idx = 3
-            for i = 1, oyuncu_sayisi do
+            for _ = 1, oyuncu_sayisi do
                 pid = v[idx]
                 idx = idx + 1
                 x = v[idx]
@@ -119,17 +118,17 @@ function oyuncu:olay_isle(olay)
     elseif olay.type == "disconnect" then
         print("baglantı koptu")
     end
-    olay = self.ag.kapi:service()
 end
 
 function oyuncu:ag_islemleri()
     local olay = self.ag.kapi:service()
     while olay do
         self:olay_isle(olay)
+    	olay = self.ag.kapi:service()
     end
 end
 function oyuncu:paket_gonder()
-    if self.ag.id then
+    if self.ag.id ~= nil and self.ag.id ~= 0 then
         local pkt = veri:yeni()
                         :bayt_ekle(0)
                         :bayt_ekle(self.ag.id)
@@ -147,7 +146,6 @@ function oyuncu:guncelle(dt)
     if input_vektor:length() == 0 then
         self.animasyon.secili = self.animasyon.durma
     else
-
         self.yer = self.yer + input_vektor:normalized() * dt * self.hiz
         self.animasyon.secili = self.animasyon.kosma
         if input_vektor.x ~= 0 then
