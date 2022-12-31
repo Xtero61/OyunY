@@ -1,6 +1,7 @@
 local enet = require("enet")
 local inspect = require("inspect")
 local veri = require("veri")
+local vektor2 = require("vektor2")
 -- TODO: sunucuya versiyon kontrolü ekle
 local Sunucu = {
   ag = {
@@ -47,8 +48,14 @@ function Sunucu:mesaj_isle(gelen_mesaj)
   local mesaj_turu = v[1]
   if mesaj_turu == 0 then
     local id = v[2]
-    local x = v[3]
-    local y = v[4]
+    local hx = v[3]
+    local hy = v[4]
+    local x = v[5]
+    local y = v[6]
+
+    self.oyuncular[id].hareket_vektor.x = hx
+    self.oyuncular[id].hareket_vektor.y = hy
+
     self.oyuncular[id].x = x
     self.oyuncular[id].y = y
   end
@@ -83,6 +90,8 @@ function Sunucu:milleti_bilgilendir()
     local v = veri:yeni():bayt_ekle(1):u32_ekle(#self.oyuncular)
     for _, oyuncu in pairs(self.oyuncular) do
       v:bayt_ekle(oyuncu.id)
+       :bayt_ekle(oyuncu.hareket_vektor.x)
+       :bayt_ekle(oyuncu.hareket_vektor.y)
        :f32_ekle(oyuncu.x)
        :f32_ekle(oyuncu.y)
     end
@@ -102,6 +111,7 @@ function Sunucu:oyuncu_ekle(gelen_kanal)
   local yeni_oyuncu = {
     x = 0,
     y = 0,
+    hareket_vektor = vektor2(0,0),
     kanal = gelen_kanal,
     id = self.hazirlanan_id
   }

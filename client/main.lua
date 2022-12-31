@@ -22,11 +22,14 @@ end
 
 function love.update(dt)
    oyuncu:guncelle(dt)
+   for _, o in pairs(players) do
+      o:guncelle(dt)
+   end
 end
 
 function love.draw()
-   for _, oyuncu in pairs(players) do
-      oyuncu:ciz()
+   for _, o in pairs(players) do
+      o:ciz()
    end
    love.graphics.setColor(0, 0, 1)
    love.graphics.print(tostring(love.timer.getFPS()))
