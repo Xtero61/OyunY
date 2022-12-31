@@ -1,7 +1,6 @@
 local enet = require("enet")
 local inspect = require("inspect")
 local veri = require("veri")
-local mesaj = require("mesaj")
 
 local Sunucu = {
   ag = {
