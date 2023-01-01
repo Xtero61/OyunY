@@ -1,9 +1,9 @@
 local istemci = require("istemci")
-local inspect = require("inspect")
 local oyuncu  = require("oyuncu")
 
 local o = oyuncu:yeni{
     uzak = false,
+    isim = "<Sen>",
 }
 local ben = istemci({ adres = "127.0.0.1:6161", oyuncu = o })
 function love.load()
