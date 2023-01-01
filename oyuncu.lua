@@ -1,55 +1,35 @@
-local SUNUCU_ADRESI = "127.0.0.1:6161"
--- local SUNUCU_ADRESI = "192.168.1.133:6161"
-local enet = require("enet")
 local anim8 = require("anim8")
 local vektor2 = require("vektor2")
-local veri = require("veri")
-players = {}
 
-local oyuncu = {
-    uzak = false,
-    hareket_vektor = vektor2(0,0),
-    isim = "oyuncu",
-    hiz = 100,
-    yer = vektor2(0,0),
-    ag = {kapi = nil, sunucu = nil, id = 0},
-    animasyon = {
-        secili = nil,
-        yon = 1,
-        kosma = nil,
-        durma = nil,
-    }
-}
-
+local oyuncu = {}
 oyuncu.__index = oyuncu
 
-function oyuncu:yeni(uzak_oyuncu)
-    local o = {
-        uzak = false,
-        hareket_vektor = vektor2(0,0),
-        isim = "oyuncu",
-        hiz = 100,
-        yer = vektor2(0,0),
-        ag = {kapi = nil, sunucu = nil, id = 0},
-        animasyon = {
-            kosma = nil,
-            durma = nil,
-            yon = 1,
-            secili = nil,
-        }
+function oyuncu:yeni(o)
+    o = o or {}
+
+    o.uzak = o.uzak or false
+    o.hareket_vektor = vektor2(0,0)
+    o.isim = o.isim or "oyuncu"
+    o.hiz = 100
+    o.yer = vektor2(0,0)
+    o.animasyon = {
+        resim = nil,
+        kosma = nil,
+        durma = nil,
+        yon = 1,
+        secili = nil,
     }
+
     setmetatable(o, self)
-    if not uzak_oyuncu then
-        o.ag.kapi = enet.host_create()
-        o.ag.sunucu = o.ag.kapi:connect(SUNUCU_ADRESI)
-    else
-        o.uzak = true
+    if not o.sunucu == true then
+	    o:animasyon_yukle()
+	    o.animasyon.secili = o.animasyon.durma
     end
-    o:animasyon_yukle()
-    o.animasyon.secili = o.animasyon.durma
 
     return o
 end
+
+setmetatable(oyuncu, {__call = oyuncu.yeni})
 
 function oyuncu:yerelx(bideger)
     return self.yer.x + bideger
@@ -60,10 +40,10 @@ function oyuncu:yerely(bideger)
 end
 
 function oyuncu:animasyon_yukle()
-    self.resim = love.graphics.newImage("ast.png")
-    self.resim:setFilter("nearest","nearest")
+    self.animasyon.resim = love.graphics.newImage("ast.png")
+    self.animasyon.resim:setFilter("nearest","nearest")
 
-    local grid =  anim8.newGrid(32, 32, self.resim:getWidth(), self.resim:getHeight())
+    local grid =  anim8.newGrid(32, 32, self.animasyon.resim:getWidth(), self.animasyon.resim:getHeight())
     self.animasyon.kosma = anim8.newAnimation(grid("1-8",2), 0.1)
     self.animasyon.durma = anim8.newAnimation(grid("1-8",1), 0.1)
 end
@@ -73,7 +53,7 @@ function oyuncu:animasyon_guncelle(dt)
 end
 
 function oyuncu:animasyon_ciz()
-    self.animasyon.secili:draw(self.resim, self.yer.x, self.yer.y ,0 ,self.animasyon.yon * 2 ,2,16,16)
+    self.animasyon.secili:draw(self.animasyon.resim, self.yer.x, self.yer.y ,0 ,self.animasyon.yon * 2 ,2,16,16)
 end
 
 local function tustan_sayi(tus)
@@ -84,104 +64,29 @@ local function tustan_sayi(tus)
     end
 end
 
-function oyuncu:olay_isle(olay)
-    if olay.type == "connect" then
-        print("baglanti başarılı")
-    elseif olay.type == "receive" then
-        -- print("Mesaj alindi " .. inspect.inspect(event))
-        local v = veri:yeni()
-                      :ham_veri_ayarla(olay.data)
-                      :getir_tablo()
-
-        local msg_turu = v[1]
-        if msg_turu == 2 then
-	    assert(v[2] ~= 0)
-            self.ag.id = v[2]
-        elseif msg_turu == 1 then
-            local oyuncu_sayisi = v[2]
-            local pid, x, y, idx, hx, hy
-            idx = 3
-            for _ = 1, oyuncu_sayisi do
-                pid = v[idx]
-                idx = idx + 1
-                
-                hx = v[idx]
-                idx = idx + 1
-    
-                hy = v[idx]
-                idx = idx + 1
-
-                x = v[idx]
-                idx = idx + 1
-                
-                
-                y = v[idx]
-                idx = idx + 1
-
-                if pid ~= self.ag.id then
-                    if players[pid] == nil then
-                        players[pid] = oyuncu:yeni(true)
-                        players[pid].ag.id = pid
-                    end
-                    players[pid].yer.x = x
-                    players[pid].yer.y = y
-
-                    players[pid].hareket_vektor.x = hx
-                    players[pid].hareket_vektor.y = hy
-                end
-            end
-        end
-    elseif olay.type == "disconnect" then
-        print("baglantı koptu")
-    end
-end
-
-function oyuncu:ag_islemleri()
-    local olay = self.ag.kapi:service()
-    while olay do
-        self:olay_isle(olay)
-    	olay = self.ag.kapi:service()
-    end
-end
-function oyuncu:paket_gonder()
-    if self.ag.id ~= nil and self.ag.id ~= 0 then
-        local pkt = veri:yeni()
-                        :bayt_ekle(0)
-                        :bayt_ekle(self.ag.id)
-                        :bayt_ekle(self.hareket_vektor.x)
-                        :bayt_ekle(self.hareket_vektor.y)
-                        :f32_ekle(self.yer.x)
-                        :f32_ekle(self.yer.y)
-                        :getir_paket()
-        self.ag.sunucu:send(pkt)
-    end
-end
 function oyuncu:guncelle(dt)
     if self.uzak == false then
         self.hareket_vektor.x = tustan_sayi("d") - tustan_sayi("a")
         self.hareket_vektor.y = tustan_sayi("s") - tustan_sayi("w")
     end
-    
+
     if self.hareket_vektor:length() == 0 then
         self.animasyon.secili = self.animasyon.durma
     else
-        self.yer = self.yer + self.hareket_vektor:normalized() * dt * self.hiz
+        if self.uzak == false then
+            self.yer = self.yer + self.hareket_vektor:normalized() * dt * self.hiz
+        end
         self.animasyon.secili = self.animasyon.kosma
         if self.hareket_vektor.x ~= 0 then
             self.animasyon.yon = self.hareket_vektor.x
         end
     end
-    
-    if self.ag.sunucu then
-        self:ag_islemleri()
-        self:paket_gonder()
-    end
+
     self:animasyon_guncelle(dt)
-    self.hareket_vektor:sifirla()
 end
 
 function oyuncu:ciz()
-    love.graphics.print(self.isim .. tostring(self.ag.id),self:yerelx(-20),self:yerely(-32))
+    love.graphics.print(self.isim, self:yerelx(-20),self:yerely(-32))
     self:animasyon_ciz()
 end
 

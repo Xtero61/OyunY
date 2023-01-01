@@ -1,38 +1,24 @@
-local o = require("oyuncu")
+local istemci = require("istemci")
 local inspect = require("inspect")
-local veri = require("veri")
-local debug_prefix = "[ CLI ] "
+local oyuncu  = require("oyuncu")
 
-local oyuncu = o:yeni()
-
-local function printd(...)
-  table.insert(messages, debug_prefix .. ...)
-
-  if #messages > 5 then
-    table.remove(messages, 1)
-  end
-end
-
+local o = oyuncu:yeni{
+    uzak = false,
+}
+local ben = istemci({ adres = "127.0.0.1:6161", oyuncu = o })
 function love.load()
    love.graphics.setBackgroundColor(0x24 / 0xFF,
                                     0x27 / 0xFF,
                                     0x2E / 0xFF)
-
 end
 
 function love.update(dt)
-   oyuncu:guncelle(dt)
-   for _, o in pairs(players) do
-      o:guncelle(dt)
-   end
+   ben:guncelle(dt)
 end
 
 function love.draw()
-   for _, o in pairs(players) do
-      o:ciz()
-   end
    love.graphics.setColor(0, 0, 1)
    love.graphics.print(tostring(love.timer.getFPS()))
    love.graphics.setColor(1,1,1)
-   oyuncu:ciz()
+   ben:ciz()
 end

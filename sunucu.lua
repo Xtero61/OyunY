@@ -1,7 +1,8 @@
 local enet = require("enet")
 local inspect = require("inspect")
 local veri = require("veri")
-local vektor2 = require("vektor2")
+local mesaj   = require("mesaj")
+local oyuncu  = require("oyuncu")
 -- TODO: sunucuya versiyon kontrolü ekle
 local Sunucu = {
   ag = {
@@ -9,6 +10,7 @@ local Sunucu = {
   },
   mesajlar = {},
   oyuncular = {},
+  oyuncu_sayisi = 0,
   hazirlanan_id = 1,
 }
 
@@ -46,7 +48,7 @@ end
 function Sunucu:mesaj_isle(gelen_mesaj)
   local v = veri:yeni():ham_veri_ayarla(gelen_mesaj):getir_tablo()
   local mesaj_turu = v[1]
-  if mesaj_turu == 0 then
+  if mesaj_turu == mesaj.ISTEMCI_DURUM_BILDIRISI then
     local id = v[2]
     local hx = v[3]
     local hy = v[4]
@@ -56,8 +58,8 @@ function Sunucu:mesaj_isle(gelen_mesaj)
     self.oyuncular[id].hareket_vektor.x = hx
     self.oyuncular[id].hareket_vektor.y = hy
 
-    self.oyuncular[id].x = x
-    self.oyuncular[id].y = y
+    self.oyuncular[id].yer.x = x
+    self.oyuncular[id].yer.y = y
   end
 end
 
@@ -66,6 +68,7 @@ function Sunucu:oyuncu_cikar(olay)
   for i, oyuncu in pairs(self.oyuncular) do
     if olay.peer == oyuncu.kanal then
       table.remove(self.oyuncular, i)
+	  self.oyuncu_sayisi = self.oyuncu_sayisi - 1
       self:ekrana_yaz("Adam kesildi " .. inspect.inspect(olay))
       adam_kayip = false
     end
@@ -87,15 +90,7 @@ function Sunucu:olay_isle(olay)
 end
 
 function Sunucu:milleti_bilgilendir()
-    local v = veri:yeni():bayt_ekle(1):u32_ekle(#self.oyuncular)
-    for _, oyuncu in pairs(self.oyuncular) do
-      v:bayt_ekle(oyuncu.id)
-       :bayt_ekle(oyuncu.hareket_vektor.x)
-       :bayt_ekle(oyuncu.hareket_vektor.y)
-       :f32_ekle(oyuncu.x)
-       :f32_ekle(oyuncu.y)
-    end
-    self.ag.kapi:broadcast(v:getir_paket())
+    self.ag.kapi:broadcast(mesaj:uret(mesaj.SUNUCU_DURUM_BILDIRISI, self))
 end
 
 function Sunucu:guncelle(dt)
@@ -104,21 +99,21 @@ function Sunucu:guncelle(dt)
     self:olay_isle(olay)
     olay = self.ag.kapi:service()
   end
-    self:milleti_bilgilendir()
+  self:milleti_bilgilendir()
 end
 
 function Sunucu:oyuncu_ekle(gelen_kanal)
-  local yeni_oyuncu = {
-    x = 0,
-    y = 0,
-    hareket_vektor = vektor2(0,0),
-    kanal = gelen_kanal,
-    id = self.hazirlanan_id
-  }
+  local y_oyuncu = oyuncu({
+      sunucu = true,
+      uzak = true,
+      kanal = gelen_kanal,
+      id = self.hazirlanan_id,
+  })
   self.hazirlanan_id = self.hazirlanan_id + 1
-  self.oyuncular[yeni_oyuncu.id] = yeni_oyuncu
+  self.oyuncular[y_oyuncu.id] = y_oyuncu
   self:ekrana_yaz("Oyuncu baglandi.")
-  self.id_gonder(yeni_oyuncu.kanal, yeni_oyuncu.id)
+  self.id_gonder(y_oyuncu.kanal, y_oyuncu.id)
+  self.oyuncu_sayisi = self.oyuncu_sayisi + 1
 end
 
 return Sunucu
