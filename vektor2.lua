@@ -1,31 +1,24 @@
 -- Godot tarzı Vektor2 kütüphanesi
-local Vektor2 = {
-  x = 0,
-  y = 0
-}
+local Vektor2 = { tip = "Vektor" }
 Vektor2.__index = Vektor2
 
-setmetatable(Vektor2, {__call = function (_, g_x, g_y)
-  return Vektor2:yeni{x = g_x, y = g_y}
+function Vektor2:yeni(o)
+  o = o or {}
+
+  o.x = o.x or 0
+  o.y = o.y or 0
+  setmetatable(o, self)
+
+  return o
+end
+
+setmetatable(Vektor2, { __call = function (_, gelen_x, gelen_y)
+    return Vektor2:yeni({ x = gelen_x, y = gelen_y })
 end})
 
 local function yeterince_esit(x, y, esik)
   esik = esik or 0.00001
   return math.abs(x - y) < esik
-end
-
-function Vektor2:yeni(o)
-  o = o or {
-    x = 0,
-    y = 0
-  }
-  setmetatable(o, self)
-  return o
-end
-
-function Vektor2:__call(g_x, g_y)
-  print("_call called")
-  return Vektor2:yeni{ x = g_x, y = g_y }
 end
 
 function Vektor2:__newindex(indeks)
@@ -336,5 +329,6 @@ function Vektor2_test()
 
   print("Yapılan Test Sayısı: " .. test_sayisi .. " -> başarılı: " .. basarili .. ", başarısız: " .. basarisiz)
 end
--- Vektor2_test()
-return Vektor2
+Vektor2_test()
+
+-- return Vektor2

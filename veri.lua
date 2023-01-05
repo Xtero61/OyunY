@@ -1,25 +1,21 @@
-local veri = {
-   ham_veri = nil,
-   veriler = {},
-   boyut = 0,
-   veri_format = "",
-   ham_veri_guncellenmeli = false,
-   veriler_guncellenmeli = false,
-}
+local veri = { tip = "veri" }
+veri.__index = veri
 
 function veri:yeni(o)
-   o = o or {
-      veriler = {},
-      veri_format = "",
-      boyut = 0,
-      ham_veri = nil,
-      ham_veri_guncellenmeli = false,
-      veriler_guncellenmeli = false,
-   }
+   o = o or {}
    setmetatable(o, self)
-   self.__index = self
+
+   o.veriler = {}
+   o.veri_format = ""
+   o.boyut = 0
+   o.ham_veri = nil
+   o.ham_veri_guncellenmeli = false
+   o.veriler_guncellenmeli = false
+
    return o
 end
+
+setmetatable(veri, { __call = veri.yeni })
 
 function veri:paketle()
    if self.ham_veri then

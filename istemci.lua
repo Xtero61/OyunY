@@ -1,14 +1,16 @@
-local oyuncu = require("oyuncu")
-local enet   = require("enet")
-local mesaj  = require("mesaj")
-local veri   = require("veri")
+local oyuncu  = require("oyuncu")
+local enet    = require("enet")
+local mesaj   = require("mesaj")
+local veri    = require("veri")
+local renkli  = require("ansicolors")
+local inspect = require("inspect")
 
 local VARSAYILAN =
 {
     ADRES = "127.0.0.1:6161",
 }
 
-local istemci = {}
+local istemci = { tip = "istemci" }
 
 -- eger bir tabloda bir fonksiyon veya deger bulunamassa
 -- o tablonun metatablosunun __index degiskenindeki 
@@ -37,6 +39,10 @@ end
 -- yerine istemci(...) seklinde cagrilabilmesini saglar
 setmetatable(istemci, { __call = istemci.yeni })
 
+function istemci:__tostring()
+    return renkli("%{yellow}<Istemci> [\n%{reset}" .. inspect.inspect(self) .. "\n%{yellow}]")
+end
+
 local function oyuncu_guncelle(hedef, tablo, baslangic_indeks, yoksay)
     local id = tablo[baslangic_indeks]
     local hx = tablo[baslangic_indeks + 1]
@@ -50,7 +56,7 @@ local function oyuncu_guncelle(hedef, tablo, baslangic_indeks, yoksay)
 
     if hedef[id] == nil then
         hedef[id] = oyuncu:yeni {
-            uzak = true,
+            oyuncu_tip = oyuncu.ISTEMCI
         }
     end
 

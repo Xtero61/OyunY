@@ -1,31 +1,35 @@
-local enet = require("enet")
+local enet    = require("enet")
 local inspect = require("inspect")
-local veri = require("veri")
+local veri    = require("veri")
 local mesaj   = require("mesaj")
 local oyuncu  = require("oyuncu")
+local renkli  = require("ansicolors")
 -- TODO: sunucuya versiyon kontrolü ekle
-local Sunucu = {
-  ag = {
-    kapi = nil,
-  },
-  mesajlar = {},
-  oyuncular = {},
-  oyuncu_sayisi = 0,
-  hazirlanan_id = 1,
-}
 
-function Sunucu:yeni(adres)
-    local sunucu = {}
-    for k, v in pairs(Sunucu) do
-        sunucu[k] = v
-    end
+local Sunucu = { tip = "sunucu" }
+Sunucu.__index = Sunucu
 
-    adres = adres or "*:6161"
-    sunucu.ag.kapi = enet.host_create("*:6161")
-    sunucu:ekrana_yaz("Sunucu basladi! Havagi :)")
+function Sunucu:yeni(o)
+    o = o or {}
+    setmetatable(o, self)
 
-    return sunucu
+    o.adres         = o.adres or "*:6161"
+    o.ag            = {}
+    o.ag.kapi       = enet.host_create(o.adres)
+    o.oyuncular     = {}
+    o.oyuncu_sayisi = 0
+    o.hazirlanan_id = 1
+
+    o:ekrana_yaz("Sunucu basladi! Havagi :)")
+
+    return o
 end
+
+function Sunucu:__tostring()
+    return renkli("%{yellow}<Sunucu>\n[%{reset}\n" .. inspect.inspect(self) .. "\n%{yellow}] %{reset}")
+end
+
+setmetatable(Sunucu, { __call = Sunucu.yeni })
 
 function Sunucu:kapat()
   self.ag.kapi:destroy()
@@ -36,13 +40,13 @@ function Sunucu:getir_bagli_oyuncu_sayisi()
 end
 
 function Sunucu:ekrana_yaz(yazi)
-  print("\27[101;94m[" .. tostring(math.ceil(love.timer.getTime() * 1000)) .. "]\27[0m" .. " " .. yazi)
+  print(renkli("%{red}[ " .. tostring(math.ceil(love.timer.getTime() * 1000)) .. " ]%{reset} " .. yazi))
 end
 
 function Sunucu.id_gonder(kanal, id)
   local v = veri:yeni():bayt_ekle(2):bayt_ekle(id):getir_paket()
   kanal:send(v)
-  Sunucu:ekrana_yaz("id gonderildi " .. tostring(id))
+  Sunucu:ekrana_yaz(renkli("ID gönderildi %{green}" .. tostring(id) .. "%{reset}" ))
 end
 
 function Sunucu:mesaj_isle(gelen_mesaj)
@@ -65,8 +69,8 @@ end
 
 function Sunucu:oyuncu_cikar(olay)
   local adam_kayip = true
-  for i, oyuncu in pairs(self.oyuncular) do
-    if olay.peer == oyuncu.kanal then
+  for i, oy in pairs(self.oyuncular) do
+    if olay.peer == oy.kanal then
       table.remove(self.oyuncular, i)
 	  self.oyuncu_sayisi = self.oyuncu_sayisi - 1
       self:ekrana_yaz("Adam kesildi " .. inspect.inspect(olay))
@@ -104,8 +108,7 @@ end
 
 function Sunucu:oyuncu_ekle(gelen_kanal)
   local y_oyuncu = oyuncu({
-      sunucu = true,
-      uzak = true,
+      oyuncu_tip = oyuncu.SUNUCU,
       kanal = gelen_kanal,
       id = self.hazirlanan_id,
   })

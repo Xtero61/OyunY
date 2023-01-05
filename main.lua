@@ -2,7 +2,7 @@ local Sunucu = require("sunucu")
 local s
 
 function love.load()
-  s = Sunucu:yeni("*:6161")
+  s = Sunucu:yeni({ adres = "*:6161" })
 end
 
 function love.update(dt)

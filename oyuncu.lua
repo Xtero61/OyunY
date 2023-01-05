@@ -1,18 +1,26 @@
-local anim8 = require("anim8")
+local anim8   = require("anim8")
+local renkli  = require("ansicolors")
 local vektor2 = require("vektor2")
 
-local oyuncu = {}
+local oyuncu   = {
+    tip     = "oyuncu",
+    SUNUCU  = "OyuncuTip::Sunucu",
+    ISTEMCI = "OyuncuTip::Istemci",
+    NORMAL  = "OyuncuTip::Normal"
+}
+
 oyuncu.__index = oyuncu
 
 function oyuncu:yeni(o)
     o = o or {}
+    setmetatable(o, self)
 
-    o.uzak = o.uzak or false
+    o.oyuncu_tip     = o.oyuncu_tip or oyuncu.NORMAL
     o.hareket_vektor = vektor2(0,0)
-    o.isim = o.isim or "oyuncu"
-    o.hiz = 100
-    o.yer = vektor2(0,0)
-    o.animasyon = {
+    o.isim           = o.isim or "oyuncu"
+    o.hiz            = 100
+    o.yer            = vektor2(0,0)
+    o.animasyon      = {
         resim = nil,
         kosma = nil,
         durma = nil,
@@ -20,8 +28,7 @@ function oyuncu:yeni(o)
         secili = nil,
     }
 
-    setmetatable(o, self)
-    if not o.sunucu == true then
+    if o.oyuncu_tip ~= oyuncu.SUNUCU then
 	    o:animasyon_yukle()
 	    o.animasyon.secili = o.animasyon.durma
     end
@@ -29,7 +36,11 @@ function oyuncu:yeni(o)
     return o
 end
 
-setmetatable(oyuncu, {__call = oyuncu.yeni})
+function oyuncu:__tostring()
+    return renkli("%{yellow}<Oyuncu> [\n%{reset}" .. inspect.inspect(self) .. "\n%{yellow}]")
+end
+
+setmetatable(oyuncu, { __call = oyuncu.yeni })
 
 function oyuncu:yerelx(bideger)
     return self.yer.x + bideger
@@ -53,7 +64,7 @@ function oyuncu:animasyon_guncelle(dt)
 end
 
 function oyuncu:animasyon_ciz()
-    self.animasyon.secili:draw(self.animasyon.resim, self.yer.x, self.yer.y ,0 ,self.animasyon.yon * 2 ,2,16,16)
+    self.animasyon.secili:draw(self.animasyon.resim, self.yer.x, self.yer.y, 0, self.animasyon.yon * 2 ,2,16,16)
 end
 
 local function tustan_sayi(tus)
@@ -65,7 +76,7 @@ local function tustan_sayi(tus)
 end
 
 function oyuncu:guncelle(dt)
-    if self.uzak == false then
+    if self.oyuncu_tip == oyuncu.NORMAL then
         self.hareket_vektor.x = tustan_sayi("d") - tustan_sayi("a")
         self.hareket_vektor.y = tustan_sayi("s") - tustan_sayi("w")
     end
@@ -73,16 +84,20 @@ function oyuncu:guncelle(dt)
     if self.hareket_vektor:length() == 0 then
         self.animasyon.secili = self.animasyon.durma
     else
-        if self.uzak == false then
+        if self.oyuncu_tip == oyuncu.NORMAL then
             self.yer = self.yer + self.hareket_vektor:normalized() * dt * self.hiz
         end
+
         self.animasyon.secili = self.animasyon.kosma
+
         if self.hareket_vektor.x ~= 0 then
             self.animasyon.yon = self.hareket_vektor.x
         end
     end
 
-    self:animasyon_guncelle(dt)
+    if self.oyuncu_tip ~= oyuncu.SUNUCU then
+        self:animasyon_guncelle(dt)
+    end
 end
 
 function oyuncu:ciz()
