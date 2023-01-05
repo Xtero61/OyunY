@@ -329,6 +329,6 @@ function Vektor2_test()
 
   print("Yapılan Test Sayısı: " .. test_sayisi .. " -> başarılı: " .. basarili .. ", başarısız: " .. basarisiz)
 end
-Vektor2_test()
 
--- return Vektor2
+-- Vektor2_test()
+return Vektor2

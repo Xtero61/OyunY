@@ -5,7 +5,9 @@ local o = oyuncu:yeni{
     uzak = false,
     isim = "<Sen>",
 }
+
 local ben = istemci({ adres = "127.0.0.1:6161", oyuncu = o })
+
 function love.load()
    love.graphics.setBackgroundColor(0x24 / 0xFF,
                                     0x27 / 0xFF,
