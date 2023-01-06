@@ -1,19 +1,23 @@
 local anim8   = require("anim8")
+local inspect = require("inspect")
 local renkli  = require("ansicolors")
 local vektor2 = require("vektor2")
 
 local oyuncu   = {
-    tip     = "oyuncu",
+    tip     = "Oyuncu",
     SUNUCU  = "OyuncuTip::Sunucu",
     ISTEMCI = "OyuncuTip::Istemci",
     NORMAL  = "OyuncuTip::Normal"
 }
 
 oyuncu.__index = oyuncu
+oyuncu.__newindex = function (self, indeks, deger)
+    print(renkli("%{yellow}" .. debug.traceback("Uyarı: Oyuncuya yeni bir deger eklendi", 2) .. "%{reset}" ))
+    rawset(self, indeks, deger)
+end
 
 function oyuncu:yeni(o)
     o = o or {}
-    setmetatable(o, self)
 
     o.oyuncu_tip     = o.oyuncu_tip or oyuncu.NORMAL
     o.hareket_vektor = vektor2(0,0)
@@ -27,6 +31,8 @@ function oyuncu:yeni(o)
         yon = 1,
         secili = nil,
     }
+
+    setmetatable(o, self)
 
     if o.oyuncu_tip ~= oyuncu.SUNUCU then
 	    o:animasyon_yukle()

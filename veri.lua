@@ -1,9 +1,14 @@
-local veri = { tip = "veri" }
+local renkli = require("ansicolors")
+
+local veri = { tip = "Veri" }
 veri.__index = veri
+veri.__newindex = function (self, indeks, deger)
+    print(renkli("%{yellow}" .. debug.traceback("Uyarı: Veriye yeni bir deger eklendi", 2) .. "%{reset}" ))
+    rawset(self, indeks, deger)
+end
 
 function veri:yeni(o)
    o = o or {}
-   setmetatable(o, self)
 
    o.veriler = {}
    o.veri_format = ""
@@ -11,6 +16,8 @@ function veri:yeni(o)
    o.ham_veri = nil
    o.ham_veri_guncellenmeli = false
    o.veriler_guncellenmeli = false
+
+   setmetatable(o, self)
 
    return o
 end
@@ -108,7 +115,12 @@ function veri:ham_veri_ayarla(ham_veri)
 end
 
 function veri:getir_paket(str_format)
-   str_format = str_format or true
+    if str_format ~= false then
+        str_format = true
+    else
+        str_format = false
+    end
+
    if self.ham_veri_guncellenmeli then
       self:paketle()
       self.ham_veri_guncellenmeli = false

@@ -4,33 +4,43 @@ local mesaj   = require("mesaj")
 local veri    = require("veri")
 local renkli  = require("ansicolors")
 local inspect = require("inspect")
+local rpc     = require("rpc")
+local Dunya   = require("dunya")
 
 local VARSAYILAN =
 {
     ADRES = "127.0.0.1:6161",
 }
 
-local istemci = { tip = "istemci" }
+local istemci = { tip = "Istemci" }
 
 -- eger bir tabloda bir fonksiyon veya deger bulunamassa
 -- o tablonun metatablosunun __index degiskenindeki 
 -- fonksiyon cagrilir. eger __index degiskeni fonksiyon yerine
 -- tablo ise bu tabloda bu deger aranır. burada bu durum kullanıldı
 istemci.__index = istemci
+istemci.__newindex = function (self, indeks, deger)
+    print(renkli("%{yellow}" .. debug.traceback("Uyarı: İstemciye yeni bir deger eklendi", 2) .. "%{reset}" ))
+    rawset(self, indeks, deger)
+end
 
 function istemci:yeni(o)
     o = o or {}
-    setmetatable(o, self)
 
     o.adres                        = o.adres or VARSAYILAN.ADRES
-    o.oyuncu                       = o.oyuncu or oyuncu:yeni()
-    o.id                           = nil
-    o.kapi                         = enet.host_create()
-    o.sunucu                       = o.kapi:connect(o.adres)
-    o.sunucu_varliklar             = {}
+    o.oyuncu                       = o.oyuncu or oyuncu:yeni({ oyuncu_tip = oyuncu.ISTEMCI })
+    o.ag                           = {}
+    o.ag.id                        = nil
+    o.ag.kapi                      = enet.host_create()
+    o.ag.sunucu                    = o.ag.kapi:connect(o.adres)
+    o.dunya                        = Dunya()
     o.istatistik                   = {}
     o.istatistik.gonderilen_paket  = 0
     o.istatistik.alinan_paket      = 0
+    o.rpc                          = 0
+
+    setmetatable(o, self)
+    o.rpc                          = rpc({ hedef = o })
 
     return o
 end
@@ -94,7 +104,7 @@ function istemci:durum_bildirimi_yap()
 end
 
 function istemci:ag_islemleri()
-    local olay = self.kapi:service()
+    local olay = self.ag.kapi:service()
     while olay do
         if olay.type == "receive" then
             self.istatistik.alinan_paket = self.istatistik.alinan_paket + 1
@@ -104,7 +114,7 @@ function istemci:ag_islemleri()
         elseif olay.type == "disconnect" then
             print("Baglanti koptu")
         end
-        olay = self.kapi:service()
+        olay = self.ag.kapi:service()
     end
 end
 
@@ -122,14 +132,12 @@ end
 
 function istemci:guncelle(dt)
     self:ag_islemleri()
-    self.oyuncu:guncelle(dt)
+    self.dunya:guncelle(dt)
     self:durum_bildirimi_yap()
-    self:varliklari_guncelle(dt)
 end
 
 function istemci:ciz()
-    self.oyuncu:ciz()
-    self:varliklari_ciz()
+    self.dunya:ciz()
 end
 
 return istemci

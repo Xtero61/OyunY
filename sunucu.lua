@@ -4,21 +4,32 @@ local veri    = require("veri")
 local mesaj   = require("mesaj")
 local oyuncu  = require("oyuncu")
 local renkli  = require("ansicolors")
+local Dunya   = require("dunya")
+local rpc     = require("rpc")
 -- TODO: sunucuya versiyon kontrolü ekle
 
-local Sunucu = { tip = "sunucu" }
+local Sunucu = { tip = "Sunucu" }
 Sunucu.__index = Sunucu
+Sunucu.__newindex = function (self, indeks, deger)
+    print(renkli("%{yellow}" .. debug.traceback("Uyarı: Sunucuya yeni bir deger eklendi", 2) .. "%{reset}" ))
+    rawset(self, indeks, deger)
+end
 
 function Sunucu:yeni(o)
     o = o or {}
-    setmetatable(o, self)
 
     o.adres         = o.adres or "*:6161"
     o.ag            = {}
-    o.ag.kapi       = enet.host_create(o.adres)
-    o.oyuncular     = {}
-    o.oyuncu_sayisi = 0
+    o.ag.kapi       = nil
+    o.ag.id         = 0
+    o.dunya         = 0
     o.hazirlanan_id = 1
+    o.rpc           = 0
+
+    setmetatable(o, self)
+    o.rpc           = rpc({ hedef = o })
+    o.dunya         = Dunya()
+    o.ag.kapi       = enet.host_create(o.adres)
 
     o:ekrana_yaz("Sunucu basladi! Havagi :)")
 
@@ -46,7 +57,7 @@ end
 function Sunucu.id_gonder(kanal, id)
   local v = veri:yeni():bayt_ekle(2):bayt_ekle(id):getir_paket()
   kanal:send(v)
-  Sunucu:ekrana_yaz(renkli("ID gönderildi %{green}" .. tostring(id) .. "%{reset}" ))
+  Sunucu:ekrana_yaz(renkli("ID verildi %{green}" .. tostring(id) .. "%{reset}" ))
 end
 
 function Sunucu:mesaj_isle(gelen_mesaj)
@@ -72,7 +83,7 @@ function Sunucu:oyuncu_cikar(olay)
   for i, oy in pairs(self.oyuncular) do
     if olay.peer == oy.kanal then
       table.remove(self.oyuncular, i)
-	  self.oyuncu_sayisi = self.oyuncu_sayisi - 1
+	  self.nesne_sayisi = self.nesne_sayisi - 1
       self:ekrana_yaz("Adam kesildi " .. inspect.inspect(olay))
       adam_kayip = false
     end
@@ -103,7 +114,8 @@ function Sunucu:guncelle(dt)
     self:olay_isle(olay)
     olay = self.ag.kapi:service()
   end
-  self:milleti_bilgilendir()
+  -- self:milleti_bilgilendir()
+  self.dunya:guncelle(dt)
 end
 
 function Sunucu:oyuncu_ekle(gelen_kanal)
@@ -116,7 +128,7 @@ function Sunucu:oyuncu_ekle(gelen_kanal)
   self.oyuncular[y_oyuncu.id] = y_oyuncu
   self:ekrana_yaz("Oyuncu baglandi.")
   self.id_gonder(y_oyuncu.kanal, y_oyuncu.id)
-  self.oyuncu_sayisi = self.oyuncu_sayisi + 1
+  self.nesne_sayisi = self.nesne_sayisi + 1
 end
 
 return Sunucu
