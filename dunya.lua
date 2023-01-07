@@ -1,4 +1,5 @@
 local inspect = require("inspect")
+local renkli  = require("ansicolors")
 
 local erisim_tablosu = {}
 erisim_tablosu.__index = erisim_tablosu
@@ -10,6 +11,7 @@ function erisim_tablosu:yeni(o)
     o.tablo   = o.tablo or nil
     o.indeks  = o.indeks or nil
     o.hedef   = o.hedef or nil
+    return o
 end
 
 setmetatable(erisim_tablosu, { __call = erisim_tablosu.yeni })
@@ -97,8 +99,8 @@ function dunya:guncelle(dt)
 end
 
 function dunya:ciz()
-    for _, hedef in pairs(self.y_sort) do
-        hedef:ciz()
+    for _, h in pairs(self.y_sort) do
+        h.hedef:ciz()
     end
 end
 

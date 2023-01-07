@@ -13,7 +13,7 @@ function veri:yeni(o)
    o.veriler = {}
    o.veri_format = ""
    o.boyut = 0
-   o.ham_veri = nil
+   o.ham_veri = 0
    o.ham_veri_guncellenmeli = false
    o.veriler_guncellenmeli = false
 
@@ -25,8 +25,9 @@ end
 setmetatable(veri, { __call = veri.yeni })
 
 function veri:paketle()
-   if self.ham_veri then
+   if self.ham_veri ~= 0 then
       self.ham_veri:release()
+      self.ham_veri = 0
    end
 
    local veri_metadata_format = "bc" .. tostring(string.len(self.veri_format))
