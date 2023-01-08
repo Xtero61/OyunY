@@ -75,18 +75,45 @@ function istemci:mesaj_isle(mesaj)
     if mesaj == nil then
         return
     end
+
     local _, mesaj_turu = string.match(mesaj[1], "(%a+)/(.+)")
-    if mesaj_turu == "id_al" then
+
+    if mesaj_turu == "durum_guncelle" then
+        local oyuncu_sayisi = mesaj[2]
+        local idx = 3
+        for _ = 1, oyuncu_sayisi do
+            idx = oyuncu_guncelle(self.dunya.oyuncular, mesaj, idx, self.ag.id)
+        end
+
+    elseif mesaj_turu == "id_al" then
         local id = mesaj[2]
         self.ag.id = id
         self.ag.abone:ayarla_kimlik(tostring(id))
+        self.ag.abone:abonelik_iptal("Lobi")
         self.durum = "Hazır"
         konsol.bilgi("ID alındı: " .. tostring(id))
+    elseif mesaj_turu == "oyuncu_ekle" then
+        local id = mesaj[2]
+        local isim = mesaj[3]
+
+        if id ~= self.ag.id then
+            self.dunya:oyuncu_ekle(id, oyuncu({isim = isim, oyuncu_tip = oyuncu.ISTEMCI}))
+        else
+            self.dunya:oyuncu_ekle(id, oyuncu({isim = isim, oyuncu_tip = oyuncu.NORMAL}))
+        end
     end
 
 end
 
 function istemci:durum_bildirimi_yap()
+    local ben = self:getir_benim_oyuncum()
+    local durum = Veri():i32_ekle(self.ag.id)
+                        :bayt_ekle(ben.hareket_vektor.x)
+                        :bayt_ekle(ben.hareket_vektor.y)
+                        :f32_ekle(ben.yer.x)
+                        :f32_ekle(ben.yer.y)
+
+    self.ag.yayinci:yayinla("Sunucu/oyuncu_durum_guncelle", durum)
 end
 
 function istemci:ag_islemleri()
@@ -133,6 +160,10 @@ function istemci:ciz()
     if self.durum == "Hazır" then
         self.dunya:ciz()
     end
+end
+
+function istemci:getir_benim_oyuncum()
+    return self.dunya:getir_oyuncu(self.ag.id)
 end
 
 return istemci

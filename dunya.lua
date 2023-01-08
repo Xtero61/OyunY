@@ -100,4 +100,8 @@ function dunya:ciz()
     end
 end
 
+function dunya:getir_oyuncu(id)
+    return self.oyuncular[id]
+end
+
 return dunya

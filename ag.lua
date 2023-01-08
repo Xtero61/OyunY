@@ -61,6 +61,7 @@ function Ag:yeni(o)
                          :abone_ol("Lobi")
     elseif o.tip == "Istemci" then
         o.abone = Abone({ ag = o }):abone_ol(rastgele_isim())
+                         :abone_ol("Lobi")
                          :abone_ol("Yonetim")
                          :abone_ol("Istemci")
     end
