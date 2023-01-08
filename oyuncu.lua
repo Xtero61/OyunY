@@ -2,6 +2,7 @@ local anim8   = require("anim8")
 local inspect = require("inspect")
 local renkli  = require("ansicolors")
 local vektor2 = require("vektor2")
+require("genel")
 
 local oyuncu   = {
     tip     = "Oyuncu",
@@ -11,10 +12,7 @@ local oyuncu   = {
 }
 
 oyuncu.__index = oyuncu
-oyuncu.__newindex = function (self, indeks, deger)
-    print(renkli("%{yellow}" .. debug.traceback("Uyarı: Oyuncuya yeni bir deger eklendi", 2) .. "%{reset}" ))
-    rawset(self, indeks, deger)
-end
+oyuncu.__newindex = YENI_INDEKS_UYARISI
 
 function oyuncu:yeni(o)
     o = o or {}

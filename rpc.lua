@@ -1,5 +1,7 @@
 local Veri   = require("veri")
 local renkli = require("ansicolors")
+require("genel")
+local konsol = require("konsol")
 
 local rpc = {
     SENKRON = 0,
@@ -7,10 +9,7 @@ local rpc = {
     KUKLA   = 2,
 }
 rpc.__index = rpc
-rpc.__newindex = function (self, indeks, deger)
-    print(renkli("%{yellow}" .. debug.traceback("Uyarı: Rpcye yeni bir deger eklendi", 2) .. "%{reset}" ))
-    rawset(self, indeks, deger)
-end
+rpc.__newindex = YENI_INDEKS_UYARISI
 
 function rpc:yeni(o)
     o = o or {}
@@ -96,7 +95,7 @@ function rpc:kontrol_et(gelen_kapi, veri)
     if self.fonksiyonlar[tip][fonk_adi] ~= nil then
         self.fonksiyonlar[tip][fonk_adi](gelen_kapi, id, unpack(v)) -- v tablosu argumanlari içeriyor
     else
-        print(renkli("%{red}Rpc hatasi!! `" .. fonk_adi .. "` rpcde bulunamadi."))
+        konsol.hata("Rpc hatasi!! `" .. fonk_adi .. "` rpcde bulunamadi.")
    end
 end
 

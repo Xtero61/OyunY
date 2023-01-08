@@ -1,11 +1,8 @@
-local renkli = require("ansicolors")
+require("genel")
 
 local veri = { tip = "Veri" }
 veri.__index = veri
-veri.__newindex = function (self, indeks, deger)
-    print(renkli("%{yellow}" .. debug.traceback("Uyarı: Veriye yeni bir deger eklendi", 2) .. "%{reset}" ))
-    rawset(self, indeks, deger)
-end
+veri.__newindex = YENI_INDEKS_UYARISI
 
 function veri:yeni(o)
    o = o or {}
@@ -35,6 +32,26 @@ function veri:paketle()
    self.ham_veri = love.data.pack("data", veri_olusturma_format, #self.veri_format, self.veri_format, unpack(self.veriler))
 
    return self.ham_veri
+end
+
+function veri:veri_ekle(veri)
+    if self.veriler_guncellenmeli then
+        self:getir_tablo()
+    end
+
+    if veri.veriler_guncellenmeli then
+        veri:getir_tablo()
+    end
+
+    for _, deger in pairs(veri.veriler) do
+        table.insert(self.veriler, deger)
+    end
+
+    self.veri_format = self.veri_format .. veri.veri_format
+    self.boyut = self.boyut + veri.boyut
+    self.ham_veri_guncellenmeli = true
+
+    return self
 end
 
 function veri:coz()

@@ -1,35 +1,26 @@
-local enet    = require("enet")
 local inspect = require("inspect")
-local veri    = require("veri")
-local mesaj   = require("mesaj")
+local Veri    = require("veri")
+local Ag      = require("ag")
 local oyuncu  = require("oyuncu")
 local renkli  = require("ansicolors")
 local Dunya   = require("dunya")
-local rpc     = require("rpc")
+require("genel")
 -- TODO: sunucuya versiyon kontrolü ekle
 
 local Sunucu = { tip = "Sunucu" }
 Sunucu.__index = Sunucu
-Sunucu.__newindex = function (self, indeks, deger)
-    print(renkli("%{yellow}" .. debug.traceback("Uyarı: Sunucuya yeni bir deger eklendi", 2) .. "%{reset}" ))
-    rawset(self, indeks, deger)
-end
+Sunucu.__newindex = YENI_INDEKS_UYARISI
 
 function Sunucu:yeni(o)
     o = o or {}
 
     o.adres         = o.adres or "*:6161"
-    o.ag            = {}
-    o.ag.kapi       = nil
-    o.ag.id         = 0
+    o.ag            = Ag({adres = o.adres, tip = "Sunucu"})
     o.dunya         = 0
     o.hazirlanan_id = 1
-    o.rpc           = 0
 
     setmetatable(o, self)
-    o.rpc           = rpc({ hedef = o })
     o.dunya         = Dunya()
-    o.ag.kapi       = enet.host_create(o.adres)
 
     o:ekrana_yaz("Sunucu basladi! Havagi :)")
 
@@ -51,31 +42,22 @@ function Sunucu:getir_bagli_oyuncu_sayisi()
 end
 
 function Sunucu:ekrana_yaz(yazi)
-  print(renkli("%{red}[ " .. tostring(math.ceil(love.timer.getTime() * 1000)) .. " ]%{reset} " .. yazi))
+  print(renkli("%{green}[ " .. tostring(math.ceil(love.timer.getTime() * 1000)) .. " ]%{reset} " .. yazi))
 end
 
-function Sunucu.id_gonder(kanal, id)
-  local v = veri:yeni():bayt_ekle(2):bayt_ekle(id):getir_paket()
-  kanal:send(v)
-  Sunucu:ekrana_yaz(renkli("ID verildi %{green}" .. tostring(id) .. "%{reset}" ))
-end
+function Sunucu:mesaj_isle(mesaj)
+    if mesaj == nil then
+        return
+    end
 
-function Sunucu:mesaj_isle(gelen_mesaj)
-  local v = veri:yeni():ham_veri_ayarla(gelen_mesaj):getir_tablo()
-  local mesaj_turu = v[1]
-  if mesaj_turu == mesaj.ISTEMCI_DURUM_BILDIRISI then
-    local id = v[2]
-    local hx = v[3]
-    local hy = v[4]
-    local x = v[5]
-    local y = v[6]
-
-    self.oyuncular[id].hareket_vektor.x = hx
-    self.oyuncular[id].hareket_vektor.y = hy
-
-    self.oyuncular[id].yer.x = x
-    self.oyuncular[id].yer.y = y
-  end
+    local _, mesaj_turu = string.match(mesaj[1], "(%a+)/(.+)")
+    local hedef_konu = mesaj[2]
+    local isim = mesaj[3]
+    if mesaj_turu == "id_al" then
+        self.ag.yayinci:yayinla(hedef_konu .. "/id_al", Veri():i32_ekle(self.hazirlanan_id))
+        self:oyuncu_ekle(self.hazirlanan_id, oyuncu({isim = isim, oyuncu_tip = oyuncu.SUNUCU}))
+        self.hazirlanan_id = self.hazirlanan_id + 1
+    end
 end
 
 function Sunucu:oyuncu_cikar(olay)
@@ -95,40 +77,25 @@ function Sunucu:oyuncu_cikar(olay)
 end
 
 function Sunucu:olay_isle(olay)
-  if olay.type == "connect" then
-    self:oyuncu_ekle(olay.peer)
-  elseif olay.type == "receive" then
-    self:mesaj_isle(olay.data)
-  elseif olay.type == "disconnect" then
-    self:oyuncu_cikar(olay)
-  end
-end
-
-function Sunucu:milleti_bilgilendir()
-    self.ag.kapi:broadcast(mesaj:uret(mesaj.SUNUCU_DURUM_BILDIRISI, self))
+    if olay.type == "connect" then
+    elseif olay.type == "receive" then
+        self:mesaj_isle(self.ag.abone:filtrele(olay.data))
+    elseif olay.type == "disconnect" then
+    end
 end
 
 function Sunucu:guncelle(dt)
-  local olay = self.ag.kapi:service()
-  while olay do
-    self:olay_isle(olay)
-    olay = self.ag.kapi:service()
-  end
-  -- self:milleti_bilgilendir()
-  self.dunya:guncelle(dt)
+    local olay = self.ag.kapi:service()
+    while olay do
+        self:olay_isle(olay)
+        olay = self.ag.kapi:service()
+    end
+    self.dunya:guncelle(dt)
 end
 
-function Sunucu:oyuncu_ekle(gelen_kanal)
-  local y_oyuncu = oyuncu({
-      oyuncu_tip = oyuncu.SUNUCU,
-      kanal = gelen_kanal,
-      id = self.hazirlanan_id,
-  })
-  self.hazirlanan_id = self.hazirlanan_id + 1
-  self.oyuncular[y_oyuncu.id] = y_oyuncu
-  self:ekrana_yaz("Oyuncu baglandi.")
-  self.id_gonder(y_oyuncu.kanal, y_oyuncu.id)
-  self.nesne_sayisi = self.nesne_sayisi + 1
+function Sunucu:oyuncu_ekle(id, oy)
+    self.dunya:oyuncu_ekle(id, oy)
+    self:ekrana_yaz("Oyuncu baglandi.")
 end
 
 return Sunucu

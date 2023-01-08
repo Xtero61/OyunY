@@ -1,5 +1,4 @@
-local inspect = require("inspect")
-local renkli  = require("ansicolors")
+require("genel")
 
 local erisim_tablosu = {}
 erisim_tablosu.__index = erisim_tablosu
@@ -18,10 +17,7 @@ setmetatable(erisim_tablosu, { __call = erisim_tablosu.yeni })
 
 local dunya = { tip = "Dunya" }
 dunya.__index = dunya
-dunya.__newindex = function (self, indeks, deger)
-    print(renkli("%{yellow}" .. debug.traceback("Uyarı: Dunyaya yeni bir deger eklendi", 2) .. "%{reset}" ))
-    rawset(self, indeks, deger)
-end
+dunya.__newindex = YENI_INDEKS_UYARISI
 
 function dunya:yeni(o)
     o = o or {}

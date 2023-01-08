@@ -1,10 +1,8 @@
+require("genel")
 -- Godot tarzı Vektor2 kütüphanesi
 local Vektor2 = { tip = "Vektor" }
 Vektor2.__index = Vektor2
-Vektor2.__newindex = function (self, indeks, deger)
-    print(renkli("%{yellow}" .. debug.traceback("Uyarı: Vektöre yeni bir deger eklendi", 2) .. "%{reset}" ))
-    rawset(self, indeks, deger)
-end
+Vektor2.__newindex = YENI_INDEKS_UYARISI
 
 function Vektor2:yeni(o)
   o = o or {}

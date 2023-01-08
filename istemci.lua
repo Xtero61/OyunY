@@ -1,11 +1,10 @@
 local oyuncu  = require("oyuncu")
-local enet    = require("enet")
-local mesaj   = require("mesaj")
-local veri    = require("veri")
+local Veri    = require("veri")
 local renkli  = require("ansicolors")
 local inspect = require("inspect")
-local rpc     = require("rpc")
+local Ag      = require("ag")
 local Dunya   = require("dunya")
+local konsol  = require("konsol")
 
 local VARSAYILAN =
 {
@@ -19,28 +18,22 @@ local istemci = { tip = "Istemci" }
 -- fonksiyon cagrilir. eger __index degiskeni fonksiyon yerine
 -- tablo ise bu tabloda bu deger aranır. burada bu durum kullanıldı
 istemci.__index = istemci
-istemci.__newindex = function (self, indeks, deger)
-    print(renkli("%{yellow}" .. debug.traceback("Uyarı: İstemciye yeni bir deger eklendi", 2) .. "%{reset}" ))
-    rawset(self, indeks, deger)
-end
+istemci.__newindex = YENI_INDEKS_UYARISI
 
 function istemci:yeni(o)
     o = o or {}
 
     o.adres                        = o.adres or VARSAYILAN.ADRES
     o.oyuncu                       = o.oyuncu or oyuncu:yeni({ oyuncu_tip = oyuncu.ISTEMCI })
-    o.ag                           = {}
-    o.ag.id                        = nil
-    o.ag.kapi                      = enet.host_create()
-    o.ag.sunucu                    = o.ag.kapi:connect(o.adres)
+    o.ag                           = Ag({adres = o.adres, tip = "Istemci"})
     o.dunya                        = Dunya()
     o.istatistik                   = {}
     o.istatistik.gonderilen_paket  = 0
     o.istatistik.alinan_paket      = 0
-    o.rpc                          = 0
+    o.durum                        = "Hazırlanıyor"
 
     setmetatable(o, self)
-    o.rpc                          = rpc({ hedef = o })
+
 
     return o
 end
@@ -78,29 +71,22 @@ local function oyuncu_guncelle(hedef, tablo, baslangic_indeks, yoksay)
     return baslangic_indeks + 5
 end
 
-function istemci:mesaj_isle(paket)
-    local v = veri:yeni():ham_veri_ayarla(paket):getir_tablo()
-    local mesaj_turu = v[1]
-    local yoksay = self.id
-
-    if mesaj_turu == mesaj.SUNUCU_ID_BILDIRISI then
-        local id = v[2]
-        self.id = id
-    elseif mesaj_turu == mesaj.SUNUCU_DURUM_BILDIRISI then
-        local varlik_sayisi = v[2]
-        local idx = 3
-
-        for _ = 1, varlik_sayisi do
-            idx = oyuncu_guncelle(self.sunucu_varliklar, v, idx, yoksay)
-        end
+function istemci:mesaj_isle(mesaj)
+    if mesaj == nil then
+        return
     end
+    local _, mesaj_turu = string.match(mesaj[1], "(%a+)/(.+)")
+    if mesaj_turu == "id_al" then
+        local id = mesaj[2]
+        self.ag.id = id
+        self.ag.abone:ayarla_kimlik(tostring(id))
+        self.durum = "Hazır"
+        konsol.bilgi("ID alındı: " .. tostring(id))
+    end
+
 end
 
 function istemci:durum_bildirimi_yap()
-    if self.id ~= nil then
-        self.sunucu:send(mesaj:uret(mesaj.ISTEMCI_DURUM_BILDIRISI, self))
-        self.istatistik.gonderilen_paket = self.istatistik.gonderilen_paket + 1
-    end
 end
 
 function istemci:ag_islemleri()
@@ -108,11 +94,13 @@ function istemci:ag_islemleri()
     while olay do
         if olay.type == "receive" then
             self.istatistik.alinan_paket = self.istatistik.alinan_paket + 1
-            self:mesaj_isle(olay.data)
+            local mesaj = self.ag.abone:filtrele(olay.data)
+            self:mesaj_isle(mesaj)
         elseif olay.type == "connect" then
-            print("Baglanti basarili")
+            -- id elde etme islemi
+            local veri = Veri():string_ekle(self.ag.abone:getir_kimlik()):string_ekle(self.oyuncu.isim)
+            self.ag.yayinci:yayinla("Lobi/id_al", veri)
         elseif olay.type == "disconnect" then
-            print("Baglanti koptu")
         end
         olay = self.ag.kapi:service()
     end
@@ -132,12 +120,19 @@ end
 
 function istemci:guncelle(dt)
     self:ag_islemleri()
-    self.dunya:guncelle(dt)
-    self:durum_bildirimi_yap()
+
+    if self.durum == "Hazır" then
+        self.dunya:guncelle(dt)
+        self:durum_bildirimi_yap()
+    elseif self.durum == "Hazırlanıyor" then
+        konsol.uyari("Bağlanılıyor...")
+    end
 end
 
 function istemci:ciz()
-    self.dunya:ciz()
+    if self.durum == "Hazır" then
+        self.dunya:ciz()
+    end
 end
 
 return istemci

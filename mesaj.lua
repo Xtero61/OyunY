@@ -1,14 +1,11 @@
 local veri = require("veri")
-local inspect = require("inspect")
+require("genel")
 
 local Mesaj = {
 	ISTEMCI_DURUM_BILDIRISI    = 1,
 	SUNUCU_ID_BILDIRISI        = 2,
 	SUNUCU_DURUM_BILDIRISI     = 3,
-	__newindex = function ()
-		print("Hata: Mesaja yeni tip eklemeye izin yok")
-		assert(false)
-	end,
+	__newindex = YENI_INDEKS_UYARISI,
 }
 
 function Mesaj:uret(mesaj_tipi, hedef_ag_nesnesi)
