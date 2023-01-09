@@ -2,10 +2,11 @@ local istemci = require("istemci")
 local oyuncu  = require("oyuncu")
 
 local o = oyuncu:yeni{
-    uzak = false,
-    isim = "<Sen>",
+    oyuncu_tip = oyuncu.NORMAL,
+    isim = "Oyuncu",
 }
 
+-- local ben = istemci({ adres = "192.168.1.48:6161", oyuncu = o })
 local ben = istemci({ adres = "127.0.0.1:6161", oyuncu = o })
 
 function love.load()

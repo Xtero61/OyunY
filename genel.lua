@@ -1,4 +1,4 @@
-local konsol = require("konsol")
+local bildir = require("bildirim")
 
 function YENI_INDEKS_UYARISI(nesne, indeks, deger)
     local hata_mesaji = "Uyari: "
@@ -8,7 +8,7 @@ function YENI_INDEKS_UYARISI(nesne, indeks, deger)
                                   .. " = "
                                   .. tostring(deger)
                                   .. " )"
-    konsol.uyari(debug.traceback(hata_mesaji))
+    bildir.uyari(debug.traceback(hata_mesaji))
     rawset(nesne, indeks, deger)
 end
 

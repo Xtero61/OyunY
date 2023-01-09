@@ -1,8 +1,7 @@
-local renkli  = require("ansicolors")
 local enet    = require("enet")
 local Abone   = require("abone")
 local Yayinci = require("yayinci")
-local konsol  = require("konsol")
+local bildir  = require("bildirim")
 require("genel")
 
 math.randomseed(os.clock()*100000000000)
@@ -38,7 +37,7 @@ function Ag:yeni(o)
     setmetatable(o, self)
 
     if o.adres == "127.0.0.1" then
-        konsol.uyari("Adres girilmedi yerel adres kullanılıyor: " .. o.adres )
+        bildir.uyari("Adres girilmedi yerel adres kullanılıyor: " .. o.adres )
     end
 
     if o.tip == "Sunucu" then

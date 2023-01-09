@@ -1,7 +1,7 @@
 local Veri   = require("veri")
 local renkli = require("ansicolors")
 require("genel")
-local konsol = require("konsol")
+local bildir = require("bildirim")
 
 local rpc = {
     SENKRON = 0,
@@ -95,7 +95,7 @@ function rpc:kontrol_et(gelen_kapi, veri)
     if self.fonksiyonlar[tip][fonk_adi] ~= nil then
         self.fonksiyonlar[tip][fonk_adi](gelen_kapi, id, unpack(v)) -- v tablosu argumanlari içeriyor
     else
-        konsol.hata("Rpc hatasi!! `" .. fonk_adi .. "` rpcde bulunamadi.")
+        bildir.hata("Rpc hatasi!! `" .. fonk_adi .. "` rpcde bulunamadi.")
    end
 end
 

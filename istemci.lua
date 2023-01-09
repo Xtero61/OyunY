@@ -4,7 +4,7 @@ local renkli  = require("ansicolors")
 local inspect = require("inspect")
 local Ag      = require("ag")
 local Dunya   = require("dunya")
-local konsol  = require("konsol")
+local bildir  = require("bildirim")
 
 local VARSAYILAN =
 {
@@ -91,7 +91,7 @@ function istemci:mesaj_isle(mesaj)
         self.ag.abone:ayarla_kimlik(tostring(id))
         self.ag.abone:abonelik_iptal("Lobi")
         self.durum = "Hazır"
-        konsol.bilgi("ID alındı: " .. tostring(id))
+        bildir.bilgi("ID alındı: " .. tostring(id))
     elseif mesaj_turu == "oyuncu_ekle" then
         local id = mesaj[2]
         local isim = mesaj[3]
@@ -152,7 +152,7 @@ function istemci:guncelle(dt)
         self.dunya:guncelle(dt)
         self:durum_bildirimi_yap()
     elseif self.durum == "Hazırlanıyor" then
-        konsol.uyari("Bağlanılıyor...")
+        bildir.uyari("Bağlanılıyor...")
     end
 end
 

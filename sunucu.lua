@@ -5,7 +5,7 @@ local oyuncu  = require("oyuncu")
 local renkli  = require("ansicolors")
 local Dunya   = require("dunya")
 require("genel")
-local konsol  = require("konsol")
+local bildir  = require("bildirim")
 -- TODO: sunucuya versiyon kontrolü ekle
 
 local Sunucu = { tip = "Sunucu" }
