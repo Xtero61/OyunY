@@ -11,8 +11,9 @@ end
 
 local function tablo_degerini_kontrol_et(tablo, tus)
     local zaman = love.timer.getTime() * 1000
+    local tablo_deger = tablo[tus] or 0
 
-    if zaman - tablo[tus] < 200 then
+    if (zaman - tablo_deger) < 1 and zaman ~= 0 and tablo_deger ~= 0 then
         return true
     end
 
