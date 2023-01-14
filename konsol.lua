@@ -1,5 +1,5 @@
 require("love_eklenti")
-require("love.timer")
+local utf8 = require("utf8")
 
 local Konsol = {}
 
@@ -16,6 +16,7 @@ setmetatable(Konsol, { __call = Konsol.yeni })
 
 local baslama_zamani = love.timer.getTime()
 local gecikme = 0.7
+love.keyboard.setKeyRepeat(true)
 
 function Konsol:guncelle(dt)
     if love.keyboard.isPressed("escape") then
@@ -34,13 +35,20 @@ function Konsol:guncelle(dt)
             Konsol.yazi = ""
         end
 
-        if love.keyboard.isDown("backspace") then
+        if love.keyboard.isPressed("backspace") then
             baslama_zamani = 0
             Konsol.ayrac.gorunme = 0
-            Konsol.yazi = string.sub(Konsol.yazi,1,string.len(Konsol.yazi)-1)
+            local bit_uzunlugu = utf8.offset(Konsol.yazi, -1)
+
+            if bit_uzunlugu then
+                -- remove the last UTF-8 character.
+                -- string.sub operates on bytes rather than UTF-8 characters, so we couldn't do string.sub(text, 1, -2).
+                Konsol.yazi = string.sub(Konsol.yazi, 1, bit_uzunlugu - 1)
+            end
         end
 
         local suanki_zaman = love.timer.getTime()
+        print(suanki_zaman)
         if suanki_zaman - baslama_zamani > gecikme then
             baslama_zamani = suanki_zaman
             if Konsol.ayrac.gorunme == 0 then
@@ -54,17 +62,27 @@ end
 
 function Konsol:ciz()
     if Konsol.durum then
+        Konsol:arkaplan()
         Konsol:ayrac_cizgi()
         love.graphics.setColor(1,1,1,1)
-        love.graphics.print(Konsol.yazi,0,0)
+        love.graphics.print(Konsol.yazi,20,7)
         love.graphics.print(Konsol.gonder_yazi,0,20)
     end
 end
 
 function Konsol:ayrac_cizgi()
-    local genislik = love.graphics.getFont():getWidth(Konsol.yazi)
+    local genislik = love.graphics.getFont():getWidth(Konsol.yazi) + 20
     love.graphics.setColor(1,1,1,Konsol.ayrac.gorunme)
-    love.graphics.rectangle("fill",genislik,0,8,16)
+    love.graphics.rectangle("fill",genislik,7,8,16)
+end
+
+function Konsol:arkaplan()
+    love.graphics.setColor(0.5,0.5,0.5,0.8)
+    love.graphics.rectangle("fill",0,0,love.graphics.getWidth(),30)
+    love.graphics.setColor(0,0,0,1)
+    love.graphics.rectangle("line",0,0,love.graphics.getWidth(),30)
+    love.graphics.setColor(0,0,1,1)
+    love.graphics.polygon("fill", 10, 10, 15, 15, 10, 20)
 end
 
 function love.textinput(t)
