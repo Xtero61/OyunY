@@ -1,0 +1,523 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Class_Veri">Class Veri </a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><strong>Veri</strong></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>Veri</code></h1>
+<p>Veri modülü</p>
+<p></p>
+
+
+<h2><a href="#Class_Veri">Class Veri </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#veri:yeni">veri:yeni (o)</a></td>
+	<td class="summary">yeni veri nesnesi oluşturur.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#veri:paketle">veri:paketle ()</a></td>
+	<td class="summary">Veri nesnesine eklenen değişkenleri ikilik(binary) degerlere cevirir.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#veri:veri_ekle">veri:veri_ekle (eklenecek_veri)</a></td>
+	<td class="summary">İki tane Veri nesnesini birleştirir.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#veri:bayt_ekle">veri:bayt_ekle (deger)</a></td>
+	<td class="summary">Veriye bayt eklenir.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#veri:ubayt_ekle">veri:ubayt_ekle (deger)</a></td>
+	<td class="summary">Veriye ubayt eklenir.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#veri:i8_ekle">veri:i8_ekle (deger)</a></td>
+	<td class="summary">Veriye 8 bit integer eklenir.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#veri:u8_ekle">veri:u8_ekle (deger)</a></td>
+	<td class="summary">Veriye 8 bit unsigned integer eklenir.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#veri:i32_ekle">veri:i32_ekle (deger)</a></td>
+	<td class="summary">Veriye 32 bit signed integer eklenir.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#veri:u32_ekle">veri:u32_ekle (deger)</a></td>
+	<td class="summary">Veriye 32 bit unsigned integer eklenir.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#veri:f32_ekle">veri:f32_ekle (deger)</a></td>
+	<td class="summary">Veriye 32 bit float eklenir.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#veri:f64_ekle">veri:f64_ekle (deger)</a></td>
+	<td class="summary">Veriye 64 bit float eklenir.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#veri:string_ekle">veri:string_ekle (deger)</a></td>
+	<td class="summary">Veriye string eklenir.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#veri:ham_veri_ayarla">veri:ham_veri_ayarla (ham_veri)</a></td>
+	<td class="summary">Veri nesnesini ikilik(binary) veri değerini harici olarak ayarlar.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#veri:getir_paket">veri:getir_paket (str_format)</a></td>
+	<td class="summary">Veri nesnesini ikilik(binary) veri değerini hesaplayıp getirir.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#veri:getir_tablo">veri:getir_tablo ()</a></td>
+	<td class="summary">Veri nesnesinin değerlerini lua tablosu olarak hesaplayıp getirir.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header has-description"><a name="Class_Veri"></a>Class Veri </h2>
+
+          <div class="section-description">
+          Veri metatablosu
+          </div>
+    <dl class="function">
+    <dt>
+    <a name = "veri:yeni"></a>
+    <strong>veri:yeni (o)</strong>
+    </dt>
+    <dd>
+    yeni veri nesnesi oluşturur.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">o</span>
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Veri tipinde bir nesne
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "veri:paketle"></a>
+    <strong>veri:paketle ()</strong>
+    </dt>
+    <dd>
+    Veri nesnesine eklenen değişkenleri ikilik(binary) degerlere cevirir.
+ Paketlenen veri ağdan gönderime veya dosyaya kaydetmeye uygun bir hale gelmiş olur.
+ Veri:getir_paket() ile ikilik(binary) değerler string olarak alınabilir.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        void
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "veri:veri_ekle"></a>
+    <strong>veri:veri_ekle (eklenecek_veri)</strong>
+    </dt>
+    <dd>
+    İki tane Veri nesnesini birleştirir.
+ Başka bir veri nesnesindeki verileri hedef veriye ekler.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">eklenecek_veri</span>
+         Eklenecek veri değişkeni
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Verinin eklendiği Veri nesnesi döndürülür.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "veri:bayt_ekle"></a>
+    <strong>veri:bayt_ekle (deger)</strong>
+    </dt>
+    <dd>
+    Veriye bayt eklenir.
+ Veriye bayt eklenir.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">deger</span>
+         Eklenecek bayt degeri
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Eklenen Veri nesnesi döndürülür.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "veri:ubayt_ekle"></a>
+    <strong>veri:ubayt_ekle (deger)</strong>
+    </dt>
+    <dd>
+    Veriye ubayt eklenir.
+ Veriye unsigned bayt(negatif değer almayan bayt) eklenir.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">deger</span>
+         Eklenecek unsigned bayt degeri
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Eklenen Veri nesnesi döndürülür.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "veri:i8_ekle"></a>
+    <strong>veri:i8_ekle (deger)</strong>
+    </dt>
+    <dd>
+    Veriye 8 bit integer eklenir.
+ Veriye 8 bitlik tamsayı değeri eklenir.
+ [-128 - 127] arası değerleri alabilir.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">deger</span>
+         Eklenecek tamsayı değeri.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Eklenen Veri nesnesi döndürülür.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "veri:u8_ekle"></a>
+    <strong>veri:u8_ekle (deger)</strong>
+    </dt>
+    <dd>
+    Veriye 8 bit unsigned integer eklenir.
+ Veriye 8 bitlik pozitif tamsayı değeri eklenir.
+ [0 - 255] arası değerleri alabilir
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">deger</span>
+         Eklenecek tamsayı değeri.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Eklenen Veri nesnesi döndürülür.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "veri:i32_ekle"></a>
+    <strong>veri:i32_ekle (deger)</strong>
+    </dt>
+    <dd>
+    Veriye 32 bit signed integer eklenir.
+ Veriye 32 bitlik tamsayı değeri eklenir.
+ [ -2147483648 - 2147483647] arası değerleri alabilir
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">deger</span>
+         Eklenecek 32 bitlik tamsayı değeri.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Eklenen Veri nesnesi döndürülür.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "veri:u32_ekle"></a>
+    <strong>veri:u32_ekle (deger)</strong>
+    </dt>
+    <dd>
+    Veriye 32 bit unsigned integer eklenir.
+ Veriye 32 bitlik pozitif tamsayı değeri eklenir.
+ [ 0 - 4294967295 ] arası değerleri alabilir
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">deger</span>
+         Eklenecek 32 bitlik pozitif tamsayı değeri.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Eklenen Veri nesnesi döndürülür.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "veri:f32_ekle"></a>
+    <strong>veri:f32_ekle (deger)</strong>
+    </dt>
+    <dd>
+    Veriye 32 bit float eklenir.
+ Veriye 32 bitlik noktalı sayı değeri eklenir.
+ [ 1.4×10^-45 - 3.4×10^38 ] arası değerleri alabilir
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">deger</span>
+         Eklenecek float32 değeri.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Eklenen Veri nesnesi döndürülür.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "veri:f64_ekle"></a>
+    <strong>veri:f64_ekle (deger)</strong>
+    </dt>
+    <dd>
+    Veriye 64 bit float eklenir.
+ Veriye 64 bitlik noktalı sayı değeri eklenir.
+ [ 4.9×10^-324 - 1.8×10^308 ] arası değerleri alabilir
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">deger</span>
+         Eklenecek float64 değeri.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Eklenen Veri nesnesi döndürülür.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "veri:string_ekle"></a>
+    <strong>veri:string_ekle (deger)</strong>
+    </dt>
+    <dd>
+    Veriye string eklenir.
+ Verilen string veriye eklenir. Maksimum string uzunluğu maksimum
+ lua string uzunluğuna eşittir.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">deger</span>
+         Eklenecek string değeri
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Eklenen Veri nesnesi döndürülür.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "veri:ham_veri_ayarla"></a>
+    <strong>veri:ham_veri_ayarla (ham_veri)</strong>
+    </dt>
+    <dd>
+    Veri nesnesini ikilik(binary) veri değerini harici olarak ayarlar.
+ Ağdan gelen veya dosyadan okunan ikilik(binary) veri değeri nesneye
+ eklenir.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">ham_veri</span>
+         Ayarlanacak ikilik(binary).
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Hedef Veri nesnesi döndürülür.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "veri:getir_paket"></a>
+    <strong>veri:getir_paket (str_format)</strong>
+    </dt>
+    <dd>
+    Veri nesnesini ikilik(binary) veri değerini hesaplayıp getirir.
+ Ağdan gönderilebilecek veya dosyaya yazılabilecek ikilik(binary) veri değeri
+ üretilir ve döndürülür.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">str_format</span>
+         İkilik veri türü string mi olacak? (Varsayılan true).
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        İkilik(binary) veri değeri döndürülür.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "veri:getir_tablo"></a>
+    <strong>veri:getir_tablo ()</strong>
+    </dt>
+    <dd>
+    Veri nesnesinin değerlerini lua tablosu olarak hesaplayıp getirir.
+ ham_veri_ayarla fonksiyonu ile ağdan gelen veya dosyadan okunan ikilik(binary)
+ veri değeri eklenmiş Veri nesnesini tablosu hesaplanıp döndürülür.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Lua tablosu döndürülür.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2023-01-15 21:31:15 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
