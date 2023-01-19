@@ -48,7 +48,6 @@ function Konsol:guncelle(dt)
         end
 
         local suanki_zaman = love.timer.getTime()
-        print(suanki_zaman)
         if suanki_zaman - baslama_zamani > gecikme then
             baslama_zamani = suanki_zaman
             if Konsol.ayrac.gorunme == 0 then
@@ -65,7 +64,7 @@ function Konsol:ciz()
         Konsol:arkaplan()
         Konsol:ayrac_cizgi()
         love.graphics.setColor(1,1,1,1)
-        love.graphics.print(Konsol.yazi,20,7)
+        love.graphics.print(Konsol.yazi,20,love.graphics.getHeight()-23)
         love.graphics.print(Konsol.gonder_yazi,0,20)
     end
 end
@@ -73,16 +72,16 @@ end
 function Konsol:ayrac_cizgi()
     local genislik = love.graphics.getFont():getWidth(Konsol.yazi) + 20
     love.graphics.setColor(1,1,1,Konsol.ayrac.gorunme)
-    love.graphics.rectangle("fill",genislik,7,8,16)
+    love.graphics.rectangle("fill",genislik,love.graphics.getHeight()-23,8,16)
 end
 
 function Konsol:arkaplan()
-    love.graphics.setColor(0.5,0.5,0.5,0.8)
-    love.graphics.rectangle("fill",0,0,love.graphics.getWidth(),30)
-    love.graphics.setColor(0,0,0,1)
-    love.graphics.rectangle("line",0,0,love.graphics.getWidth(),30)
+    love.graphics.setColor(0,0,0,0.8)
+    love.graphics.rectangle("fill",0,love.graphics.getHeight()-30,love.graphics.getWidth(),30)
+    love.graphics.setColor(0.5,0.5,0.5,1)
+    love.graphics.rectangle("line",0,love.graphics.getHeight()-30,love.graphics.getWidth(),30)
     love.graphics.setColor(0,0,1,1)
-    love.graphics.polygon("fill", 10, 10, 15, 15, 10, 20)
+    love.graphics.polygon("fill", 10, 10+love.graphics.getHeight()-30, 15, 15+love.graphics.getHeight()-30, 10, 20+love.graphics.getHeight()-30)
 end
 
 function love.textinput(t)
