@@ -6,6 +6,7 @@ local Konsol = {}
 Konsol.__index = Konsol
 Konsol.__newindex = YENI_INDEKS_UYARISI
 
+Konsol.yaziSon = ""
 Konsol.yazi = ""
 Konsol.gonder_yazi = ""
 Konsol.durum = false
@@ -24,20 +25,18 @@ function Konsol:guncelle(dt)
             Konsol.durum = false
         else
             Konsol.durum = true
-            baslama_zamani = 0
-            Konsol.ayrac.gorunme = 0
+            Konsol.ayrac:ayrac_zamanlayici_sifirla()
         end
     end
 
     if Konsol.durum then
         if love.keyboard.isPressed("return") then
-            Konsol.gonder_yazi = Konsol.yazi
+            Konsol.gonder_yazi = Konsol.yazi .. Konsol.yaziSon
             Konsol.yazi = ""
         end
 
         if love.keyboard.isPressed("backspace") then
-            baslama_zamani = 0
-            Konsol.ayrac.gorunme = 0
+            Konsol.ayrac:ayrac_zamanlayici_sifirla()
             local bit_uzunlugu = utf8.offset(Konsol.yazi, -1)
 
             if bit_uzunlugu then
@@ -45,6 +44,11 @@ function Konsol:guncelle(dt)
                 -- string.sub operates on bytes rather than UTF-8 characters, so we couldn't do string.sub(text, 1, -2).
                 Konsol.yazi = string.sub(Konsol.yazi, 1, bit_uzunlugu - 1)
             end
+        end
+        if love.keyboard.isPressed("left") then
+
+        elseif love.keyboard.isPressed("right") then
+            
         end
 
         local suanki_zaman = love.timer.getTime()
@@ -62,14 +66,21 @@ end
 function Konsol:ciz()
     if Konsol.durum then
         Konsol:arkaplan()
-        Konsol:ayrac_cizgi()
+        Konsol.ayrac:ayrac_cizgi()
         love.graphics.setColor(1,1,1,1)
         love.graphics.print(Konsol.yazi,20,love.graphics.getHeight()-23)
+        local genislik = love.graphics.getFont():getWidth(Konsol.yazi) + 20
+        love.graphics.print(Konsol.yaziSon,genislik,love.graphics.getHeight()-23)
         love.graphics.print(Konsol.gonder_yazi,0,20)
     end
 end
 
-function Konsol:ayrac_cizgi()
+function Konsol.ayrac:ayrac_zamanlayici_sifirla()
+    baslama_zamani = 0
+    Konsol.ayrac.gorunme = 0
+end
+
+function Konsol.ayrac:ayrac_cizgi()
     local genislik = love.graphics.getFont():getWidth(Konsol.yazi) + 20
     love.graphics.setColor(1,1,1,Konsol.ayrac.gorunme)
     love.graphics.rectangle("fill",genislik,love.graphics.getHeight()-23,8,16)
@@ -86,8 +97,7 @@ end
 
 function love.textinput(t)
     if Konsol.durum then
-        baslama_zamani = 0
-        Konsol.ayrac.gorunme = 0
+        Konsol.ayrac:ayrac_zamanlayici_sifirla()
         Konsol.yazi = Konsol.yazi .. t
     end
 end
