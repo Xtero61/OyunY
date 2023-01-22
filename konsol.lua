@@ -33,12 +33,11 @@ function Konsol:guncelle(dt)
         if love.keyboard.isPressed("return") then
             Konsol.gonder_yazi = Konsol.yazi .. Konsol.yaziSon
             Konsol.yazi = ""
+            Konsol.yaziSon = ""
         end
-
         if love.keyboard.isPressed("backspace") then
             Konsol.ayrac:ayrac_zamanlayici_sifirla()
             local bit_uzunlugu = utf8.offset(Konsol.yazi, -1)
-
             if bit_uzunlugu then
                 -- remove the last UTF-8 character.
                 -- string.sub operates on bytes rather than UTF-8 characters, so we couldn't do string.sub(text, 1, -2).
@@ -46,11 +45,22 @@ function Konsol:guncelle(dt)
             end
         end
         if love.keyboard.isPressed("left") then
-
+            Konsol.ayrac:ayrac_zamanlayici_sifirla()
+            local bit_uzunlugu = utf8.offset(Konsol.yazi, -1)
+            print(bit_uzunlugu)
+            if bit_uzunlugu then
+                Konsol.yaziSon = string.sub(Konsol.yazi, bit_uzunlugu, - 1) .. Konsol.yaziSon
+                Konsol.yazi = string.sub(Konsol.yazi, 1, bit_uzunlugu - 1)
+            end
         elseif love.keyboard.isPressed("right") then
-            
+            Konsol.ayrac:ayrac_zamanlayici_sifirla()
+            local bit_uzunlugu = utf8.offset(string.reverse(Konsol.yaziSon),-1)
+            print(bit_uzunlugu)
+            if bit_uzunlugu then
+                Konsol.yazi = Konsol.yazi .. string.sub(string.reverse(Konsol.yaziSon), bit_uzunlugu,-1)
+                Konsol.yaziSon = string.reverse(string.sub(string.reverse(Konsol.yaziSon), 1, bit_uzunlugu - 1))
+            end
         end
-
         local suanki_zaman = love.timer.getTime()
         if suanki_zaman - baslama_zamani > gecikme then
             baslama_zamani = suanki_zaman
@@ -67,7 +77,7 @@ function Konsol:ciz()
     if Konsol.durum then
         Konsol:arkaplan()
         Konsol.ayrac:ayrac_cizgi()
-        love.graphics.setColor(1,1,1,1)
+        love.graphics.setColor(1,1,1)
         love.graphics.print(Konsol.yazi,20,love.graphics.getHeight()-23)
         local genislik = love.graphics.getFont():getWidth(Konsol.yazi) + 20
         love.graphics.print(Konsol.yaziSon,genislik,love.graphics.getHeight()-23)
