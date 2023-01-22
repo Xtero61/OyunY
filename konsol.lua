@@ -46,19 +46,18 @@ function Konsol:guncelle(dt)
         end
         if love.keyboard.isPressed("left") then
             Konsol.ayrac:ayrac_zamanlayici_sifirla()
-            local bit_uzunlugu = utf8.offset(Konsol.yazi, -1)
-            print(bit_uzunlugu)
-            if bit_uzunlugu then
-                Konsol.yaziSon = string.sub(Konsol.yazi, bit_uzunlugu, - 1) .. Konsol.yaziSon
-                Konsol.yazi = string.sub(Konsol.yazi, 1, bit_uzunlugu - 1)
+            local harf_yeri = utf8.offset(Konsol.yazi, -1)
+            if harf_yeri then
+                Konsol.yaziSon = string.sub(Konsol.yazi, harf_yeri, - 1) .. Konsol.yaziSon
+                Konsol.yazi = string.sub(Konsol.yazi, 1, harf_yeri - 1)
             end
         elseif love.keyboard.isPressed("right") then
             Konsol.ayrac:ayrac_zamanlayici_sifirla()
-            local bit_uzunlugu = utf8.offset(string.reverse(Konsol.yaziSon),-1)
-            print(bit_uzunlugu)
-            if bit_uzunlugu then
-                Konsol.yazi = Konsol.yazi .. string.sub(string.reverse(Konsol.yaziSon), bit_uzunlugu,-1)
-                Konsol.yaziSon = string.reverse(string.sub(string.reverse(Konsol.yaziSon), 1, bit_uzunlugu - 1))
+            local son_yazi_ilk_harf_uzunlugu = utf8.offset(Konsol.yaziSon,2)
+            if son_yazi_ilk_harf_uzunlugu then
+	        son_yazi_ilk_harf_uzunlugu = son_yazi_ilk_harf_uzunlugu - 1
+                Konsol.yazi = Konsol.yazi .. string.sub(Konsol.yaziSon, 1, son_yazi_ilk_harf_uzunlugu)
+                Konsol.yaziSon = string.sub(Konsol.yaziSon, son_yazi_ilk_harf_uzunlugu + 1, -1)
             end
         end
         local suanki_zaman = love.timer.getTime()

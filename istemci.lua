@@ -5,6 +5,7 @@ local inspect = require("inspect")
 local Ag      = require("ag")
 local Dunya   = require("dunya")
 local bildir  = require("bildirim")
+local konsol  = require("konsol")
 
 local VARSAYILAN =
 {
@@ -154,12 +155,16 @@ function istemci:guncelle(dt)
     elseif self.durum == "Hazırlanıyor" then
         bildir.uyari("Bağlanılıyor...")
     end
+
+    konsol:guncelle(dt)
 end
 
 function istemci:ciz()
     if self.durum == "Hazır" then
         self.dunya:ciz()
     end
+
+    konsol:ciz()
 end
 
 function istemci:getir_benim_oyuncum()
