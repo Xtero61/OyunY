@@ -7,6 +7,7 @@ Konsol.__index = Konsol
 Konsol.__newindex = YENI_INDEKS_UYARISI
 
 Konsol.metin = {}
+Konsol.metin.gorunme = false
 Konsol.metin.durum = false
 Konsol.metin.yazi = ""
 Konsol.metin.boyu = 14
@@ -19,8 +20,10 @@ Konsol.ayrac.gorunme = 1
 
 setmetatable(Konsol, { __call = Konsol.yeni })
 
+local baslangic = love.timer.getTime()
 local baslama_zamani = love.timer.getTime()
 local gecikme = 0.7
+local metin_kaybolma = 7
 love.keyboard.setKeyRepeat(true)
 
 function Konsol:guncelle(dt)
@@ -28,12 +31,12 @@ function Konsol:guncelle(dt)
         if Konsol.durum == true then
             Konsol.durum = false
         else
+            Konsol.metin:gorunurluk_zamanlayici()
             Konsol.durum = true
             Konsol.ayrac:ayrac_zamanlayici_sifirla()
         end
     end
     if Konsol.durum then
-        Konsol.metin.durum = true
         if love.keyboard.isPressed("return") then -- yazılan yazıyı gönderme 
             Konsol.gonder_yazi = Konsol.yazi .. Konsol.yaziSon
             Konsol.metin.yazi = Konsol.metin.yazi .. "| " .. Konsol.gonder_yazi .. "\n"
@@ -81,6 +84,14 @@ function Konsol:guncelle(dt)
                 Konsol.ayrac.gorunme = 0
             end
         end
+    else
+        if Konsol.metin.durum == true then
+            local suan = love.timer.getTime()
+            if suan - baslangic > metin_kaybolma then
+                Konsol.metin.durum = false
+                Konsol.metin.gorunme = false
+            end
+        end
     end
 end
 function Konsol:ciz()
@@ -92,10 +103,16 @@ function Konsol:ciz()
         local genislik = love.graphics.getFont():getWidth(Konsol.yazi) + 20
         love.graphics.print(Konsol.yaziSon,genislik,love.graphics.getHeight()-22.5)
     end
-    if  Konsol.metin.durum == true then
+    if Konsol.metin.gorunme == true then
         local metin = love.graphics.newText(love.graphics.getFont(),Konsol.metin.yazi)
-        love.graphics.draw(metin,10,love.graphics.getHeight()-51.5+Konsol.metin.boyu)            
+        love.graphics.draw(metin,7,love.graphics.getHeight()-51.5+Konsol.metin.boyu)            
     end
+end
+
+function Konsol.metin:gorunurluk_zamanlayici()
+    baslangic = love.timer.getTime()
+    Konsol.metin.gorunme = true
+    Konsol.metin.durum = true
 end
 
 function Konsol.ayrac:ayrac_zamanlayici_sifirla()
