@@ -7,7 +7,6 @@ Konsol.__index = Konsol
 Konsol.__newindex = YENI_INDEKS_UYARISI
 
 Konsol.metin = {}
-Konsol.metin.gorunme = false
 Konsol.metin.durum = false
 Konsol.metin.yazi = ""
 Konsol.metin.boyu = 14
@@ -31,8 +30,8 @@ function Konsol:guncelle(dt)
         if Konsol.durum == true then
             Konsol.durum = false
         else
-            Konsol.metin:gorunurluk_zamanlayici()
             Konsol.durum = true
+            Konsol.metin:gorunurluk_zamanlayici()
             Konsol.ayrac:ayrac_zamanlayici_sifirla()
         end
     end
@@ -87,9 +86,9 @@ function Konsol:guncelle(dt)
     else
         if Konsol.metin.durum == true then
             local suan = love.timer.getTime()
+            print(suan)
             if suan - baslangic > metin_kaybolma then
                 Konsol.metin.durum = false
-                Konsol.metin.gorunme = false
             end
         end
     end
@@ -103,7 +102,7 @@ function Konsol:ciz()
         local genislik = love.graphics.getFont():getWidth(Konsol.yazi) + 20
         love.graphics.print(Konsol.yaziSon,genislik,love.graphics.getHeight()-22.5)
     end
-    if Konsol.metin.gorunme == true then
+    if Konsol.metin.durum == true then
         local metin = love.graphics.newText(love.graphics.getFont(),Konsol.metin.yazi)
         love.graphics.draw(metin,7,love.graphics.getHeight()-51.5+Konsol.metin.boyu)            
     end
@@ -111,7 +110,6 @@ end
 
 function Konsol.metin:gorunurluk_zamanlayici()
     baslangic = love.timer.getTime()
-    Konsol.metin.gorunme = true
     Konsol.metin.durum = true
 end
 
