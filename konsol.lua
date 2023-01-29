@@ -22,7 +22,7 @@ setmetatable(Konsol, { __call = Konsol.yeni })
 local baslangic = love.timer.getTime()
 local baslama_zamani = love.timer.getTime()
 local gecikme = 0.7
-local metin_kaybolma = 7
+local metin_kaybolma = 5
 love.keyboard.setKeyRepeat(true)
 
 function Konsol:guncelle(dt)
@@ -38,12 +38,6 @@ function Konsol:guncelle(dt)
     if Konsol.durum then
         if love.keyboard.isPressed("return") then -- yazılan yazıyı gönderme 
             Konsol.gonder_yazi = Konsol.yazi .. Konsol.yaziSon
-            Konsol.metin.yazi = Konsol.metin.yazi .. "| " .. Konsol.gonder_yazi .. "\n"
-            if Konsol.metin.boyu <= -126 then -- metinin ilk satırını silme
-                Konsol.metin.yazi = string.gmatch(Konsol.metin.yazi, "[^\n]+\n(.+)")()
-            else
-            Konsol.metin.boyu = Konsol.metin.boyu - 14
-            end
             Konsol.yazi = ""
             Konsol.yaziSon = ""
         end
@@ -86,13 +80,13 @@ function Konsol:guncelle(dt)
     else
         if Konsol.metin.durum == true then
             local suan = love.timer.getTime()
-            print(suan)
             if suan - baslangic > metin_kaybolma then
                 Konsol.metin.durum = false
             end
         end
     end
 end
+
 function Konsol:ciz()
     if Konsol.durum then
         Konsol:arkaplan()
@@ -111,6 +105,25 @@ end
 function Konsol.metin:gorunurluk_zamanlayici()
     baslangic = love.timer.getTime()
     Konsol.metin.durum = true
+end
+
+function Konsol.metin:metine_yazi_ekle(isim,yazi)
+    Konsol.metin.yazi = Konsol.metin.yazi .. isim .." : " .. yazi .. "\n"
+    Konsol.metin:metinin_boyunu_ayarlama()
+end
+
+function Konsol.metin:metine_komut_yazi_ekle(komut)
+    Konsol.metin.yazi = Konsol.metin.yazi .. komut .. "\n"
+    Konsol.metin:metinin_boyunu_ayarlama()
+end
+
+function Konsol.metin:metinin_boyunu_ayarlama()
+    if Konsol.metin.boyu <= -126 then -- metinin ilk satırını silme
+        Konsol.metin.yazi = string.gmatch(Konsol.metin.yazi, "[^\n]+\n(.+)")()
+    else
+        Konsol.metin.boyu = Konsol.metin.boyu - 14
+    end
+    Konsol.metin:gorunurluk_zamanlayici()
 end
 
 function Konsol.ayrac:ayrac_zamanlayici_sifirla()
