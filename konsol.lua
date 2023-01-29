@@ -6,6 +6,7 @@ local Konsol = {}
 Konsol.__index = Konsol
 Konsol.__newindex = YENI_INDEKS_UYARISI
 
+Konsol.yazi_gonderme_fonksiyonu = nil
 Konsol.metin = {}
 Konsol.metin.durum = false
 Konsol.metin.yazi = ""
@@ -40,6 +41,9 @@ function Konsol:guncelle(dt)
             Konsol.gonder_yazi = Konsol.yazi .. Konsol.yaziSon
             Konsol.yazi = ""
             Konsol.yaziSon = ""
+            if Konsol.yazi_gonderme_fonksiyonu ~= nil then
+                Konsol.yazi_gonderme_fonksiyonu(Konsol.gonder_yazi)
+            end
         end
         if love.keyboard.isDown("lctrl") and love.keyboard.isPressed("t") then -- yazışma kutucuğunu temizleme
             Konsol.metin.yazi = ""
