@@ -56,13 +56,16 @@ function Ag:yeni(o)
 
     if o.tip == "Sunucu" then
         o.abone = Abone({ ag = o }):abone_ol("0")
-                         :abone_ol("Sunucu")
-                         :abone_ol("Lobi")
+                        :abone_ol("Sunucu")
+                        :abone_ol("Lobi")
+        o.abone:ayarla_kimlik("0")
     elseif o.tip == "Istemci" then
-        o.abone = Abone({ ag = o }):abone_ol(rastgele_isim())
-                         :abone_ol("Lobi")
-                         :abone_ol("Yonetim")
-                         :abone_ol("Istemci")
+        local rast_isim = rastgele_isim()
+        o.abone = Abone({ ag = o }):abone_ol(rast_isim)
+                        :abone_ol("Lobi")
+                        :abone_ol("Yonetim")
+                        :abone_ol("Istemci")
+        o.abone:ayarla_kimlik(rast_isim)
     end
 
     return o

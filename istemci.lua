@@ -32,6 +32,9 @@ function istemci:yeni(o)
     o.istatistik.gonderilen_paket  = 0
     o.istatistik.alinan_paket      = 0
     o.durum                        = "Hazırlanıyor"
+    konsol.yazi_gonderme_fonksiyonu = function (yazi)
+        o.ag.yayinci:yayinla("Sunucu/sohbet", Veri():string_ekle(yazi))
+    end
 
     setmetatable(o, self)
 
@@ -77,33 +80,37 @@ function istemci:mesaj_isle(mesaj)
         return
     end
 
-    local _, mesaj_turu = string.match(mesaj[1], "(%a+)/(.+)")
+    local _, mesaj_turu = string.match(mesaj[MESAJ_KANAL_TUR_ALANI], "(%a+)/(.+)")
 
     if mesaj_turu == "durum_guncelle" then
-        local oyuncu_sayisi = mesaj[2]
-        local idx = 3
+        local oyuncu_sayisi = mesaj[MESAJ_TIP_OZEL_1]
+        local idx = MESAJ_TIP_OZEL_2
         for _ = 1, oyuncu_sayisi do
             idx = oyuncu_guncelle(self.dunya.oyuncular, mesaj, idx, self.ag.id)
         end
 
     elseif mesaj_turu == "id_al" then
-        local id = mesaj[2]
+        local id = mesaj[MESAJ_TIP_OZEL_1]
         self.ag.id = id
         self.ag.abone:ayarla_kimlik(tostring(id))
+        self.ag.abone:abone_ol(self.ag.abone:getir_kimlik())
         self.ag.abone:abonelik_iptal("Lobi")
         self.durum = "Hazır"
         bildir.bilgi("ID alındı: " .. tostring(id))
     elseif mesaj_turu == "oyuncu_ekle" then
-        local id = mesaj[2]
-        local isim = mesaj[3]
+        local id = mesaj[MESAJ_TIP_OZEL_1]
+        local isim = mesaj[MESAJ_TIP_OZEL_2]
 
         if id ~= self.ag.id then
             self.dunya:oyuncu_ekle(id, oyuncu({isim = isim, oyuncu_tip = oyuncu.ISTEMCI}))
         else
             self.dunya:oyuncu_ekle(id, oyuncu({isim = isim, oyuncu_tip = oyuncu.NORMAL}))
         end
+    elseif mesaj_turu == "sohbet" then
+        if self.ag.id ~= mesaj[MESAJ_TIP_OZEL_3] then
+            konsol.metin:metine_yazi_ekle(mesaj[MESAJ_TIP_OZEL_1], mesaj[MESAJ_TIP_OZEL_2])
+        end
     end
-
 end
 
 function istemci:durum_bildirimi_yap()
