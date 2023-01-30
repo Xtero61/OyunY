@@ -107,7 +107,9 @@ function istemci:mesaj_isle(mesaj)
             self.dunya:oyuncu_ekle(id, oyuncu({isim = isim, oyuncu_tip = oyuncu.NORMAL}))
         end
     elseif mesaj_turu == "sohbet" then
-        if self.ag.id ~= mesaj[MESAJ_TIP_OZEL_3] then
+        if self.ag.id == mesaj[MESAJ_TIP_OZEL_3] then
+            konsol.metin:metine_yazi_ekle("[Sen]", mesaj[MESAJ_TIP_OZEL_2])
+        else
             konsol.metin:metine_yazi_ekle(mesaj[MESAJ_TIP_OZEL_1], mesaj[MESAJ_TIP_OZEL_2])
         end
     end

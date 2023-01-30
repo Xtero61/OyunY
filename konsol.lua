@@ -41,7 +41,6 @@ function Konsol:guncelle(dt)
             Konsol.gonder_yazi = Konsol.yazi .. Konsol.yaziSon
             Konsol.yazi = ""
             Konsol.yaziSon = ""
-            Konsol.metin:metine_yazi_ekle("[Sen]", Konsol.gonder_yazi)
             if Konsol.yazi_gonderme_fonksiyonu ~= nil then
                 Konsol.yazi_gonderme_fonksiyonu(Konsol.gonder_yazi)
             end
