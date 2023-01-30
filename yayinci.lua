@@ -19,7 +19,7 @@ setmetatable(Yayinci, { __call = Yayinci.yeni })
 
 function Yayinci:yayinla(konu, veri)
     assert(konu ~= nil and veri ~= nil)
-    local v = Veri():string_ekle(konu):veri_ekle(veri)
+    local v = Veri():bayt_ekle(self.ag.id):string_ekle(konu):veri_ekle(veri)
 
     if self.ag.tip == "Sunucu" then
         self.ag.kapi:broadcast(v:getir_paket())

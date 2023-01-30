@@ -18,7 +18,7 @@ setmetatable(Abone, { __call = Abone.yeni })
 
 function Abone:filtrele(paket)
     local mesaj = Veri():ham_veri_ayarla(paket):getir_tablo()
-    local konu, _ = string.match(mesaj[1], "(%a+)/(%a+)")
+    local konu, _ = string.match(mesaj[MESAJ_KANAL_TUR_ALANI], "(%a+)/(%a+)")
     if self:abonemiyim(konu) then
         return mesaj
     end
@@ -26,34 +26,28 @@ function Abone:filtrele(paket)
 end
 
 function Abone:abonemiyim(konu)
-    for _, v in pairs(self.abonelikler) do
-        if v == konu then
-            return true
-        end
+    if self.abonelikler[konu] then
+        return true
     end
     return false
 end
 
 function Abone:abone_ol(konu)
-    table.insert(self.abonelikler, konu)
+    self.abonelikler[konu] = true
     return self
 end
 
 function Abone:abonelik_iptal(konu)
-    for i, v in pairs(self.abonelikler) do
-        if v == konu then
-            table.remove(self.abonelikler, i)
-        end
-    end
+    self.abonelikler[konu] = false
     return self
 end
 
 function Abone:getir_kimlik()
-    return self.abonelikler[1]
+    return self.abonelikler["kimlik"]
 end
 
 function Abone:ayarla_kimlik(kimlik)
-    self.abonelikler[1] = kimlik
+    self.abonelikler["kimlik"] = kimlik
     return self
 end
 

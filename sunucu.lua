@@ -51,13 +51,14 @@ function Sunucu:mesaj_isle(mesaj)
         return
     end
 
-    local _, mesaj_turu = string.match(mesaj[1], "(%a+)/(.+)")
-    local hedef_konu = mesaj[2]
-    local isim = mesaj[3]
+    local _, mesaj_turu = string.match(mesaj[MESAJ_KANAL_TUR_ALANI], "(%a+)/(.+)")
+
     if mesaj_turu == "id_al" then
-        -- baglanan oyuncuya oyun durumu burada gönderilmeli
-        -- şuan sadece oyuncular var o yüzden yalnızca onları göndereceğiz
-        -- en son id göndereceğiz ve istemci id konusuna geçiş yapacak
+      -- baglanan oyuncuya oyun durumu burada gönderilmeli
+      -- şuan sadece oyuncular var o yüzden yalnızca onları göndereceğiz
+      -- en son id göndereceğiz ve istemci id konusuna geçiş yapacak
+        local hedef_konu = mesaj[MESAJ_TIP_OZEL_1]
+        local isim = mesaj[MESAJ_TIP_OZEL_2]
         for id, oy in pairs(self.dunya.oyuncular) do
             self.ag.yayinci:yayinla(hedef_konu .. "/oyuncu_ekle", Veri():i32_ekle(id)
                                                                         :string_ekle(oy.isim))
@@ -70,17 +71,23 @@ function Sunucu:mesaj_isle(mesaj)
         self.hazirlanan_id = self.hazirlanan_id + 1
 
     elseif mesaj_turu == "oyuncu_durum_guncelle" then
-        local oyuncu_id  = mesaj[2]
-        local oyuncu_hx  = mesaj[3]
-        local oyuncu_hy  = mesaj[4]
-        local oyuncu_yx  = mesaj[5]
-        local oyuncu_yy  = mesaj[6]
+        local oyuncu_id  = mesaj[MESAJ_TIP_OZEL_1]
+        local oyuncu_hx  = mesaj[MESAJ_TIP_OZEL_2]
+        local oyuncu_hy  = mesaj[MESAJ_TIP_OZEL_3]
+        local oyuncu_yx  = mesaj[MESAJ_TIP_OZEL_4]
+        local oyuncu_yy  = mesaj[MESAJ_TIP_OZEL_5]
 
         local oy = self.dunya:getir_oyuncu(oyuncu_id)
         oy.hareket_vektor.x = oyuncu_hx
         oy.hareket_vektor.y = oyuncu_hy
         oy.yer.x = oyuncu_yx
         oy.yer.y = oyuncu_yy
+
+    elseif mesaj_turu == "sohbet" then
+        local gonderen_id = mesaj[MESAJ_GONDEREN_ID_ALANI]
+        local oy_isim = self.dunya:getir_oyuncu(tonumber(gonderen_id)).isim
+        local yazi = mesaj[MESAJ_TIP_OZEL_1]
+        self.ag.yayinci:yayinla("Istemci/sohbet", Veri():string_ekle(oy_isim):string_ekle(yazi):bayt_ekle(gonderen_id))
     end
 end
 

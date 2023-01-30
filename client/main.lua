@@ -1,9 +1,15 @@
+if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
+   require("lldebugger").start()
+end
+
 local istemci = require("istemci")
 local oyuncu  = require("oyuncu")
 
+local isim = os.getenv("USER")
+
 local o = oyuncu:yeni{
     oyuncu_tip = oyuncu.NORMAL,
-    isim = "Oyuncu",
+    isim = isim,
 }
 
 -- local ben = istemci({ adres = "192.168.1.48:6161", oyuncu = o })
