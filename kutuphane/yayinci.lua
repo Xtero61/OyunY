@@ -1,6 +1,6 @@
-local renkli = require("ansicolors")
-local Veri   = require("veri")
-require("genel")
+local renkli = require("kutuphane.ansicolors")
+local Veri   = require("kutuphane.veri")
+require("kutuphane.genel")
 
 local Yayinci = {}
 Yayinci.__index = Yayinci

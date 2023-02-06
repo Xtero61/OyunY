@@ -1,5 +1,5 @@
-local veri = require("veri")
-require("genel")
+local veri = require("kutuphane.veri")
+require("kutuphane.genel")
 
 local Mesaj = {
 	ISTEMCI_DURUM_BILDIRISI    = 1,

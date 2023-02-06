@@ -1,8 +1,8 @@
-local anim8   = require("anim8")
-local inspect = require("inspect")
-local renkli  = require("ansicolors")
-local vektor2 = require("vektor2")
-require("genel")
+local anim8   = require("kutuphane.anim8")
+local inspect = require("kutuphane.inspect")
+local renkli  = require("kutuphane.ansicolors")
+local vektor2 = require("kutuphane.vektor2")
+require("kutuphane.genel")
 
 local oyuncu   = {
     tip     = "Oyuncu",
@@ -55,7 +55,7 @@ function oyuncu:yerely(bideger)
 end
 
 function oyuncu:animasyon_yukle()
-    self.animasyon.resim = love.graphics.newImage("ast.png")
+    self.animasyon.resim = love.graphics.newImage("cizim/ast.png")
     self.animasyon.resim:setFilter("nearest","nearest")
 
     local grid =  anim8.newGrid(32, 32, self.animasyon.resim:getWidth(), self.animasyon.resim:getHeight())

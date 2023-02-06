@@ -1,8 +1,8 @@
 local enet    = require("enet")
-local Abone   = require("abone")
-local Yayinci = require("yayinci")
-local bildir  = require("bildirim")
-require("genel")
+local Abone   = require("kutuphane.abone")
+local Yayinci = require("kutuphane.yayinci")
+local bildir  = require("kutuphane.bildirim")
+require("kutuphane.genel")
 
 math.randomseed(os.clock()*100000000000)
 local function rastgele_isim(eklenti)

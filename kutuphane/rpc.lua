@@ -1,7 +1,7 @@
-local Veri   = require("veri")
-local renkli = require("ansicolors")
-require("genel")
-local bildir = require("bildirim")
+local Veri   = require("kutuphane.veri")
+local renkli = require("kutuphane.ansicolors")
+local bildir = require("kutuphane.bildirim")
+require("kutuphane.genel")
 
 local rpc = {
     SENKRON = 0,

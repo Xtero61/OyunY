@@ -1,11 +1,12 @@
-local inspect = require("inspect")
-local Veri    = require("veri")
-local Ag      = require("ag")
-local oyuncu  = require("oyuncu")
-local renkli  = require("ansicolors")
-local Dunya   = require("dunya")
-require("genel")
-local bildir  = require("bildirim")
+local inspect = require("kutuphane.inspect")
+local Veri    = require("kutuphane.veri")
+local Ag      = require("kutuphane.ag")
+local oyuncu  = require("kutuphane.oyuncu")
+local renkli  = require("kutuphane.ansicolors")
+local Dunya   = require("kutuphane.dunya")
+local bildir  = require("kutuphane.bildirim")
+require("kutuphane.genel")
+
 -- TODO: sunucuya versiyon kontrolü ekle
 
 local Sunucu = { tip = "Sunucu" }
@@ -88,23 +89,25 @@ function Sunucu:mesaj_isle(mesaj)
         local oy_isim = self.dunya:getir_oyuncu(tonumber(gonderen_id)).isim
         local yazi = mesaj[MESAJ_TIP_OZEL_1]
         self.ag.yayinci:yayinla("Istemci/sohbet", Veri():string_ekle(oy_isim):string_ekle(yazi):bayt_ekle(gonderen_id))
+    else
+        bildir.uyari("Bilinmeyen mesaj turu -> " .. mesaj_turu)
     end
 end
 
 function Sunucu:oyuncu_cikar(olay)
-  local adam_kayip = true
-  for i, oy in pairs(self.oyuncular) do
-    if olay.peer == oy.kanal then
-      table.remove(self.oyuncular, i)
-	  self.nesne_sayisi = self.nesne_sayisi - 1
-      self:ekrana_yaz("Adam kesildi " .. inspect.inspect(olay))
-      adam_kayip = false
+    local adam_kayip = true
+    for i, oy in pairs(self.oyuncular) do
+        if olay.peer == oy.kanal then
+            table.remove(self.oyuncular, i)
+            self.nesne_sayisi = self.nesne_sayisi - 1
+            self:ekrana_yaz("Adam kesildi " .. inspect.inspect(olay))
+            adam_kayip = false
+        end
     end
-  end
 
-  if adam_kayip then
-    self:ekrana_yaz("Adam kayip Rıza baba :)")
-  end
+    if adam_kayip then
+        self:ekrana_yaz("Adam kayip Rıza baba :)")
+    end
 end
 
 function Sunucu:olay_isle(olay)

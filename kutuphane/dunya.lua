@@ -1,4 +1,4 @@
-require("genel")
+require("kutuphane.genel")
 
 local erisim_tablosu = {}
 erisim_tablosu.__index = erisim_tablosu

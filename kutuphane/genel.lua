@@ -1,4 +1,4 @@
-local bildir = require("bildirim")
+local bildir = require("kutuphane.bildirim")
 
 function YENI_INDEKS_UYARISI(nesne, indeks, deger)
     local hata_mesaji = "Uyari: "
@@ -20,6 +20,4 @@ MESAJ_TIP_OZEL_3 = 5
 MESAJ_TIP_OZEL_4 = 6
 MESAJ_TIP_OZEL_5 = 7
 
-
-return
 

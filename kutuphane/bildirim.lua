@@ -1,4 +1,4 @@
-local renkli = require("ansicolors")
+local renkli = require("kutuphane.ansicolors")
 
 local bildirim = {}
 

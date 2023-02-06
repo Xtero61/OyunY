@@ -1,4 +1,4 @@
-require("love_eklenti")
+require("kutuphane.love_eklenti")
 local utf8 = require("utf8")
 
 local Konsol = {}
@@ -6,7 +6,7 @@ local Konsol = {}
 Konsol.__index = Konsol
 Konsol.__newindex = YENI_INDEKS_UYARISI
 
-Konsol.yazi_gonderme_fonksiyonu = nil
+Konsol.yazi_gonderme_fonksiyonlari = {}
 Konsol.metin = {}
 Konsol.metin.durum = false
 Konsol.metin.yazi = ""
@@ -41,8 +41,18 @@ function Konsol:guncelle(dt)
             Konsol.gonder_yazi = Konsol.yazi .. Konsol.yaziSon
             Konsol.yazi = ""
             Konsol.yaziSon = ""
-            if Konsol.yazi_gonderme_fonksiyonu ~= nil then
-                Konsol.yazi_gonderme_fonksiyonu(Konsol.gonder_yazi)
+            local mesaj_islendi = false
+            if #Konsol.yazi_gonderme_fonksiyonlari ~= 0 then
+                for _, fonk in pairs(Konsol.yazi_gonderme_fonksiyonlari) do
+                    if fonk(Konsol.gonder_yazi) then
+                        mesaj_islendi = true
+                    end
+                end
+
+                if not mesaj_islendi then
+                    Konsol.metin:metine_komut_yazi_ekle("Bilinmeyen komut -> " .. Konsol.gonder_yazi)
+                    Konsol.metin:metine_komut_yazi_ekle("Tum komutlar icin '/yardim'")
+                end
             end
         end
         if love.keyboard.isDown("lctrl") and love.keyboard.isPressed("t") then -- yazışma kutucuğunu temizleme
@@ -102,7 +112,7 @@ function Konsol:ciz()
     end
     if Konsol.metin.durum == true then
         local metin = love.graphics.newText(love.graphics.getFont(),Konsol.metin.yazi)
-        love.graphics.draw(metin,7,love.graphics.getHeight()-51.5+Konsol.metin.boyu)            
+        love.graphics.draw(metin,7,love.graphics.getHeight()-51.5+Konsol.metin.boyu)
     end
 end
 

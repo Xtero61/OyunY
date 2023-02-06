@@ -1,6 +1,6 @@
 --- Veri modülü
 -- @module Veri
-require("genel")
+require("kutuphane.genel")
 
 --- 
 -- Veri metatablosu 

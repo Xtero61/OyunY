@@ -1,11 +1,11 @@
-local oyuncu  = require("oyuncu")
-local Veri    = require("veri")
-local renkli  = require("ansicolors")
-local inspect = require("inspect")
-local Ag      = require("ag")
-local Dunya   = require("dunya")
-local bildir  = require("bildirim")
-local konsol  = require("konsol")
+local oyuncu  = require("kutuphane.oyuncu")
+local Veri    = require("kutuphane.veri")
+local renkli  = require("kutuphane.ansicolors")
+local inspect = require("kutuphane.inspect")
+local Ag      = require("kutuphane.ag")
+local Dunya   = require("kutuphane.dunya")
+local bildir  = require("kutuphane.bildirim")
+local konsol  = require("kutuphane.konsol")
 
 local VARSAYILAN =
 {
@@ -32,9 +32,13 @@ function istemci:yeni(o)
     o.istatistik.gonderilen_paket  = 0
     o.istatistik.alinan_paket      = 0
     o.durum                        = "Hazırlanıyor"
-    konsol.yazi_gonderme_fonksiyonu = function (yazi)
-        o.ag.yayinci:yayinla("Sunucu/sohbet", Veri():string_ekle(yazi))
-    end
+    table.insert(konsol.yazi_gonderme_fonksiyonlari, function (yazi)
+        if yazi:find("/") ~= 1 then
+            o.ag.yayinci:yayinla("Sunucu/sohbet", Veri():string_ekle(yazi))
+            return true
+        end
+        return false
+    end)
 
     setmetatable(o, self)
 
@@ -164,16 +168,12 @@ function istemci:guncelle(dt)
     elseif self.durum == "Hazırlanıyor" then
         bildir.uyari("Bağlanılıyor...")
     end
-
-    konsol:guncelle(dt)
 end
 
 function istemci:ciz()
     if self.durum == "Hazır" then
         self.dunya:ciz()
     end
-
-    konsol:ciz()
 end
 
 function istemci:getir_benim_oyuncum()
