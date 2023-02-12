@@ -34,7 +34,7 @@ function istemci:yeni(o)
     o.durum                        = "Hazırlanıyor"
     sinyal_fonksiyon_bagla("Konsol.yazi_girildi", function (yazi)
         if yazi:find("/") ~= 1 then
-            o.ag.yayinci:yayinla("Sunucu/sohbet", Veri():string_ekle(yazi))
+            o.ag:yayinla("Sunucu/sohbet", Veri():string_ekle(yazi))
             return true
         end
         return false
@@ -95,9 +95,9 @@ function istemci:mesaj_isle(mesaj)
     elseif mesaj_turu == "id_al" then
         local id = mesaj[MESAJ_TIP_OZEL_1]
         self.ag.id = id
-        self.ag.abone:ayarla_kimlik(tostring(id))
-        self.ag.abone:abone_ol(self.ag.abone:getir_kimlik())
-        self.ag.abone:abonelik_iptal("Lobi")
+        self.ag:ayarla_kimlik(tostring(id))
+        self.ag:abone_ol(self.ag:getir_kimlik())
+        self.ag:abonelik_iptal("Lobi")
         self.durum = "Hazır"
         bildir.bilgi("ID alındı: " .. tostring(id))
     elseif mesaj_turu == "oyuncu_ekle" then
@@ -126,7 +126,7 @@ function istemci:durum_bildirimi_yap()
                         :f32_ekle(ben.yer.x)
                         :f32_ekle(ben.yer.y)
 
-    self.ag.yayinci:yayinla("Sunucu/oyuncu_durum_guncelle", durum)
+    self.ag:yayinla("Sunucu/oyuncu_durum_guncelle", durum)
 end
 
 function istemci:ag_islemleri()
@@ -134,12 +134,12 @@ function istemci:ag_islemleri()
     while olay do
         if olay.type == "receive" then
             self.istatistik.alinan_paket = self.istatistik.alinan_paket + 1
-            local mesaj = self.ag.abone:filtrele(olay.data)
+            local mesaj = self.ag:filtrele(olay.data)
             self:mesaj_isle(mesaj)
         elseif olay.type == "connect" then
             -- id elde etme islemi
-            local veri = Veri():string_ekle(self.ag.abone:getir_kimlik()):string_ekle(self.oyuncu.isim)
-            self.ag.yayinci:yayinla("Lobi/id_al", veri)
+            local veri = Veri():string_ekle(self.ag:getir_kimlik()):string_ekle(self.oyuncu.isim)
+            self.ag:yayinla("Lobi/id_al", veri)
         elseif olay.type == "disconnect" then
         end
         olay = self.ag.kapi:service()

@@ -61,13 +61,13 @@ function Sunucu:mesaj_isle(mesaj)
         local hedef_konu = mesaj[MESAJ_TIP_OZEL_1]
         local isim = mesaj[MESAJ_TIP_OZEL_2]
         for id, oy in pairs(self.dunya.oyuncular) do
-            self.ag.yayinci:yayinla(hedef_konu .. "/oyuncu_ekle", Veri():i32_ekle(id)
+            self.ag:yayinla(hedef_konu .. "/oyuncu_ekle", Veri():i32_ekle(id)
                                                                         :string_ekle(oy.isim))
         end
 
-        self.ag.yayinci:yayinla(hedef_konu .. "/id_al", Veri():i32_ekle(self.hazirlanan_id))
+        self.ag:yayinla(hedef_konu .. "/id_al", Veri():i32_ekle(self.hazirlanan_id))
         self:oyuncu_ekle(self.hazirlanan_id, oyuncu({isim = isim, oyuncu_tip = oyuncu.SUNUCU}))
-        self.ag.yayinci:yayinla("Istemci/oyuncu_ekle", Veri():i32_ekle(self.hazirlanan_id)
+        self.ag:yayinla("Istemci/oyuncu_ekle", Veri():i32_ekle(self.hazirlanan_id)
                                                              :string_ekle(isim))
         self.hazirlanan_id = self.hazirlanan_id + 1
 
@@ -88,7 +88,7 @@ function Sunucu:mesaj_isle(mesaj)
         local gonderen_id = mesaj[MESAJ_GONDEREN_ID_ALANI]
         local oy_isim = self.dunya:getir_oyuncu(tonumber(gonderen_id)).isim
         local yazi = mesaj[MESAJ_TIP_OZEL_1]
-        self.ag.yayinci:yayinla("Istemci/sohbet", Veri():string_ekle(oy_isim):string_ekle(yazi):bayt_ekle(gonderen_id))
+        self.ag:yayinla("Istemci/sohbet", Veri():string_ekle(oy_isim):string_ekle(yazi):bayt_ekle(gonderen_id))
     else
         bildir.uyari("Bilinmeyen mesaj turu -> " .. mesaj_turu)
     end
@@ -113,7 +113,7 @@ end
 function Sunucu:olay_isle(olay)
     if olay.type == "connect" then
     elseif olay.type == "receive" then
-        self:mesaj_isle(self.ag.abone:filtrele(olay.data))
+        self:mesaj_isle(self.ag:filtrele(olay.data))
     elseif olay.type == "disconnect" then
     end
 end
@@ -134,7 +134,7 @@ function Sunucu:guncelle(dt)
                            :f32_ekle(oy.yer.x)
                            :f32_ekle(oy.yer.y)
     end
-    self.ag.yayinci:yayinla("Istemci/durum_guncelle", durum_guncelle_veri)
+    self.ag:yayinla("Istemci/durum_guncelle", durum_guncelle_veri)
 end
 
 function Sunucu:oyuncu_ekle(id, oy)

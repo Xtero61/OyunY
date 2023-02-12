@@ -55,7 +55,6 @@ local function komut_isle(komut_satiri)
         else
             Konsol.metin:metine_komut_yazi_ekle("Isim -> " .. OyuncuIsmi)
         end
-            Konsol.metin:metine_komut_yazi_ekle("Isim ayarlandi -> " .. yeni_isim)
     else
         Konsol.metin:metine_komut_yazi_ekle("!!! Hata bilinmeyen komut !!! -> " .. komut)
     end

@@ -12,6 +12,22 @@ function YENI_INDEKS_UYARISI(nesne, indeks, deger)
     rawset(nesne, indeks, deger)
 end
 
+function _G.rastgele_isim(eklenti)
+    eklenti = eklenti or ""
+    math.randomseed(os.clock()*100000000000)
+
+    local harf_uret = function ()
+        return string.char(math.random(0, 25) + 97) -- ascii 'a'
+    end
+
+    local isim = ""
+    for _=1, 12 do
+        isim = isim .. harf_uret()
+    end
+
+    return isim .. eklenti
+end
+
 -- Sabitler
 MESAJ_GONDEREN_ID_ALANI = 1
 MESAJ_KANAL_TUR_ALANI = 2
