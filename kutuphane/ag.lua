@@ -5,6 +5,7 @@ local bildir  = require("kutuphane.bildirim")
 require("kutuphane.genel")
 
 math.randomseed(os.clock()*100000000000)
+
 local function rastgele_isim(eklenti)
     eklenti = eklenti or ""
 

@@ -25,25 +25,16 @@ local function komut_isle(komut_satiri)
         sunucu_nesne = Sunucu:yeni({adres = ip_adres})
         Konsol.metin:metine_komut_yazi_ekle("Sunucuya otomatik baglanma devre disi!!!")
         Konsol.metin:metine_komut_yazi_ekle("Baglanmak icin -> /baglan <adres>:<port>")
-        return true
-    end
-
-    if komut == "baglan" then
+    elseif komut == "baglan" then
         local it = komut_satiri:gmatch("%S+")
         it()
         local ip_adres = it()
         Konsol.metin:metine_komut_yazi_ekle("Baglaniliyor -> " .. ip_adres)
         local o = Oyuncu({isim = OyuncuIsmi, oyuncu_tip = Oyuncu.NORMAL })
         hedef_nesne = Istemci:yeni({adres = ip_adres, oyuncu = o})
-        return true
-    end
-
-    if komut == "cik" then
+    elseif komut == "cik" then
         love.event.quit(0)
-        return true
-    end
-
-    if komut == "yardim" then
+    elseif komut == "yardim" then
         Konsol.metin:metine_komut_yazi_ekle("")
         Konsol.metin:metine_komut_yazi_ekle("")
         Konsol.metin:metine_komut_yazi_ekle(" Komutlar")
@@ -53,10 +44,7 @@ local function komut_isle(komut_satiri)
         Konsol.metin:metine_komut_yazi_ekle("/isim <isim> -> Isim verilirse isim ayarlar verilmezse degerini gosterir.")
         Konsol.metin:metine_komut_yazi_ekle("/yardim -> Bu metni gosterir.")
         Konsol.metin:metine_komut_yazi_ekle("/cik -> Oyunu kapatir.")
-        return true
-    end
-
-    if komut == "isim" then
+    elseif komut == "isim" then
         local it = komut_satiri:gmatch("%S+")
         it() -- /isim gitti
         local yeni_isim = it()
@@ -67,11 +55,10 @@ local function komut_isle(komut_satiri)
         else
             Konsol.metin:metine_komut_yazi_ekle("Isim -> " .. OyuncuIsmi)
         end
-
-        return true
+            Konsol.metin:metine_komut_yazi_ekle("Isim ayarlandi -> " .. yeni_isim)
+    else
+        Konsol.metin:metine_komut_yazi_ekle("!!! Hata bilinmeyen komut !!! -> " .. komut)
     end
-
-    return false
 end
 
 function love.load()
@@ -79,11 +66,10 @@ function love.load()
     0x27 / 0xFF,
     0x2E / 0xFF)
 
-    table.insert(Konsol.yazi_gonderme_fonksiyonlari, function (yazi)
+    sinyal_fonksiyon_bagla("Konsol.yazi_girildi", function (yazi)
         if yazi:find("/") == 1 then
             return komut_isle(yazi)
         end
-        return false
     end)
 end
 

@@ -32,7 +32,7 @@ function istemci:yeni(o)
     o.istatistik.gonderilen_paket  = 0
     o.istatistik.alinan_paket      = 0
     o.durum                        = "Hazırlanıyor"
-    table.insert(konsol.yazi_gonderme_fonksiyonlari, function (yazi)
+    sinyal_fonksiyon_bagla("Konsol.yazi_girildi", function (yazi)
         if yazi:find("/") ~= 1 then
             o.ag.yayinci:yayinla("Sunucu/sohbet", Veri():string_ekle(yazi))
             return true
@@ -41,7 +41,6 @@ function istemci:yeni(o)
     end)
 
     setmetatable(o, self)
-
 
     return o
 end

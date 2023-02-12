@@ -18,6 +18,8 @@ Konsol.durum = false
 Konsol.ayrac = {}
 Konsol.ayrac.gorunme = 1
 
+sinyal_tanimla("Konsol.yazi_girildi")
+
 setmetatable(Konsol, { __call = Konsol.yeni })
 
 local baslangic = love.timer.getTime()
@@ -41,19 +43,7 @@ function Konsol:guncelle(dt)
             Konsol.gonder_yazi = Konsol.yazi .. Konsol.yaziSon
             Konsol.yazi = ""
             Konsol.yaziSon = ""
-            local mesaj_islendi = false
-            if #Konsol.yazi_gonderme_fonksiyonlari ~= 0 then
-                for _, fonk in pairs(Konsol.yazi_gonderme_fonksiyonlari) do
-                    if fonk(Konsol.gonder_yazi) then
-                        mesaj_islendi = true
-                    end
-                end
-
-                if not mesaj_islendi then
-                    Konsol.metin:metine_komut_yazi_ekle("Bilinmeyen komut -> " .. Konsol.gonder_yazi)
-                    Konsol.metin:metine_komut_yazi_ekle("Tum komutlar icin '/yardim'")
-                end
-            end
+            sinyal_ver("Konsol.yazi_girildi", Konsol.gonder_yazi)
         end
         if love.keyboard.isDown("lctrl") and love.keyboard.isPressed("t") then -- yazışma kutucuğunu temizleme
             Konsol.metin.yazi = ""
