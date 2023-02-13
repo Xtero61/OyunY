@@ -17,6 +17,7 @@ oyuncu.__newindex = YENI_INDEKS_UYARISI
 function oyuncu:yeni(o)
     o = o or {}
 
+    o.yonetilebilir  = true
     o.oyuncu_tip     = o.oyuncu_tip or oyuncu.NORMAL
     o.hareket_vektor = vektor2(0,0)
     o.isim           = o.isim or "oyuncu"
@@ -36,6 +37,10 @@ function oyuncu:yeni(o)
 	    o:animasyon_yukle()
 	    o.animasyon.secili = o.animasyon.durma
     end
+
+    sinyal_fonksiyon_bagla("Konsol.durum_degisti", function(durum)
+	o.yonetilebilir = not durum
+    end)
 
     return o
 end
@@ -80,7 +85,7 @@ local function tustan_sayi(tus)
 end
 
 function oyuncu:guncelle(dt)
-    if self.oyuncu_tip == oyuncu.NORMAL then
+    if self.oyuncu_tip == oyuncu.NORMAL and self.yonetilebilir then
         self.hareket_vektor.x = tustan_sayi("d") - tustan_sayi("a")
         self.hareket_vektor.y = tustan_sayi("s") - tustan_sayi("w")
     end

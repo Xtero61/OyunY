@@ -19,6 +19,7 @@ Konsol.ayrac = {}
 Konsol.ayrac.gorunme = 1
 
 sinyal_tanimla("Konsol.yazi_girildi")
+sinyal_tanimla("Konsol.durum_degisti")
 
 setmetatable(Konsol, { __call = Konsol.yeni })
 
@@ -32,10 +33,12 @@ function Konsol:guncelle(dt)
     if love.keyboard.isPressed("escape") then -- konsol açıp kapama
         if Konsol.durum == true then
             Konsol.durum = false
+	    sinyal_ver("Konsol.durum_degisti", Konsol.durum)
         else
             Konsol.durum = true
             Konsol.metin:gorunurluk_zamanlayici()
             Konsol.ayrac:ayrac_zamanlayici_sifirla()
+	    sinyal_ver("Konsol.durum_degisti", Konsol.durum)
         end
     end
     if Konsol.durum then
