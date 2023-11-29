@@ -28,6 +28,18 @@ local function komut_isle(komut_satiri)
         return true
     end
 
+    if komut == "k" then
+        local ip_adres = "*:" .. "6565"
+        sunucu_nesne = Sunucu:yeni({adres = ip_adres})
+        return true
+    end
+
+    if komut == "b" then
+        local o = Oyuncu({isim = OyuncuIsmi, oyuncu_tip = Oyuncu.NORMAL })
+        hedef_nesne = Istemci:yeni({adres = "127.0.0.1:6565", oyuncu = o})
+        return true
+    end
+
     if komut == "baglan" then
         local it = komut_satiri:gmatch("%S+")
         it()
@@ -103,9 +115,9 @@ function love.draw()
     love.graphics.setColor(0, 0, 1)
     love.graphics.print(tostring(love.timer.getFPS()))
     love.graphics.setColor(1, 1, 1)
-    Konsol:ciz()
-
+    
     if hedef_nesne then
         hedef_nesne:ciz()
     end
+    Konsol:ciz()
 end
