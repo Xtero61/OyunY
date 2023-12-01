@@ -13,7 +13,7 @@ function bildirim.hata(mesaj)
 end
 
 function bildirim.bilgi(mesaj)
-    bildirim.yazdir(renkli("%{green}" .. mesaj .. "%{reset}"))
+    bildirim.yazdir(renkli("%{green}[BILGI] " .. mesaj .. "%{reset}"))
 end
 
 function bildirim.oneri(mesaj)

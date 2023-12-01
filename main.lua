@@ -3,10 +3,11 @@ if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
     require("lldebugger").start()
 end
 
-local Istemci    = require("kutuphane.istemci")
-local Sunucu     = require("kutuphane.sunucu")
-local Konsol     = require("kutuphane.konsol")
-local Oyuncu     = require("kutuphane.oyuncu")
+local Istemci     = require("kutuphane.istemci")
+local Sunucu      = require("kutuphane.sunucu")
+local Konsol      = require("kutuphane.konsol")
+local Oyuncu      = require("kutuphane.oyuncu")
+local Zamanlayici = require("kutuphane.zamanlayici")
 
 local OyuncuIsmi = os.getenv("USER")
 local hedef_nesne, sunucu_nesne
@@ -100,6 +101,7 @@ function love.load()
 end
 
 function love.update(dt)
+    Zamanlayici.guncelle(dt)
     Konsol:guncelle(dt)
 
     if hedef_nesne and hedef_nesne.guncelle then

@@ -26,12 +26,7 @@ function oyuncu:yeni(o)
     o.hiz              = 100
     o.yer              = vektor2(0,0)
     o.boyut            = vektor2(0,0)
-    o.kullanici_arayuz = kullanici_arayuz:yeni(
-        {
-            oyuncu = o,
-            yer = vektor2(10, love.graphics.getHeight() - 50)
-        }
-    )
+    o.kullanici_arayuz = {}
 
     o.animasyon      = {
         resim = nil,
@@ -43,8 +38,20 @@ function oyuncu:yeni(o)
 
     setmetatable(o, self)
 
-    if o.oyuncu_tip ~= oyuncu.SUNUCU then
+    if o.oyuncu_tip == oyuncu.SUNUCU then
+    end
+
+    if o.oyuncu_tip == oyuncu.NORMAL then
 	    o:animasyon_yukle()
+	    o.animasyon.secili = o.animasyon.durma
+        o.kullanici_arayuz = kullanici_arayuz:yeni{
+            oyuncu = o,
+            yer = vektor2(10, love.graphics.getHeight() - 50)
+        }
+    end
+
+    if o.oyuncu_tip == oyuncu.ISTEMCI then
+        o:animasyon_yukle()
 	    o.animasyon.secili = o.animasyon.durma
     end
 
@@ -123,7 +130,9 @@ function oyuncu:guncelle(dt)
         self.sag_el:update(dt)
     end
 
-    self.kullanici_arayuz:guncelle(dt)
+    if self.oyuncu_tip == oyuncu.NORMAL then
+        self.kullanici_arayuz:guncelle(dt)
+    end
 end
 
 function oyuncu:ciz()
@@ -137,7 +146,9 @@ function oyuncu:ciz()
         self.sag_el:draw()
     end
 
-    self.kullanici_arayuz:ciz()
+    if self.oyuncu_tip == oyuncu.NORMAL then
+        self.kullanici_arayuz:ciz()
+    end
 end
 
 return oyuncu
