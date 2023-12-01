@@ -11,7 +11,6 @@ function Vektor2:yeni(o)
   o.x = o.x or 0
   o.y = o.y or 0
   setmetatable(o, self)
-
   return o
 end
 
