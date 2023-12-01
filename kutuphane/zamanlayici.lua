@@ -25,11 +25,13 @@ function M.yeni(o)
     o.sure = o.sure or 1000
     o.tekrar = o.tekrar or false
     o.tamamlandi = false
-    o.calisiyor = false
+    o.calisiyor = o.calisiyor or false
     o.baslangic = 0
-    o.tetik_fonksiyonu = o.tetik_fonksiyonu or function (fark)
-        bildirim.bilgi(o.isim .. " tamamlandi " .. tostring(fark))
+    o.tetik_fonksiyonu = o.tetik_fonksiyonu or function ()
+        bildirim.bilgi(o.isim .. " tamamlandi " .. tostring())
     end
+    o.arg = o.arg or {}
+
     setmetatable(o, Zamanlayici)
 
     M.zamanlayicilar[o.isim] = o
@@ -66,7 +68,7 @@ function M.guncelle(dt)
         if self.calisiyor then
             if simdiki_zaman - self.baslangic >= self.sure then
                 self.tamamlandi = true
-                self.tetik_fonksiyonu(simdiki_zaman - self.baslangic)
+                self.tetik_fonksiyonu(unpack(self.arg))
 
                 if self.tekrar then
                     self.tamamlandi = false
