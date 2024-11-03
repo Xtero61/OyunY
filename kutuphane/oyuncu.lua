@@ -5,31 +5,31 @@ local vektor2          = require("kutuphane.vektor2")
 local kullanici_arayuz = require("kutuphane.kullanici_arayuz")
 require("kutuphane.genel")
 
-local oyuncu   = {
+local oyuncu      = {
     tip     = "Oyuncu",
     SUNUCU  = "OyuncuTip::Sunucu",
     ISTEMCI = "OyuncuTip::Istemci",
     NORMAL  = "OyuncuTip::Normal"
 }
 
-oyuncu.__index = oyuncu
+oyuncu.__index    = oyuncu
 oyuncu.__newindex = YENI_INDEKS_UYARISI
 
 function oyuncu:yeni(o)
-    o = o or {}
+    o                  = o or {}
 
-    o.yonetilebilir  = true
+    o.yonetilebilir    = true
     o.sol_el           = nil
     o.sag_el           = nil
     o.oyuncu_tip       = o.oyuncu_tip or oyuncu.NORMAL
-    o.hareket_vektor   = vektor2(0,0)
+    o.hareket_vektor   = vektor2(0, 0)
     o.isim             = o.isim or "oyuncu"
     o.hiz              = 100
-    o.yer              = vektor2(0,0)
-    o.boyut            = vektor2(0,0)
+    o.yer              = vektor2(0, 0)
+    o.boyut            = vektor2(0, 0)
     o.kullanici_arayuz = {}
 
-    o.animasyon      = {
+    o.animasyon        = {
         resim = nil,
         kosma = nil,
         durma = nil,
@@ -43,9 +43,9 @@ function oyuncu:yeni(o)
     end
 
     if o.oyuncu_tip == oyuncu.NORMAL then
-	    o:animasyon_yukle()
-	    o.animasyon.secili = o.animasyon.durma
-        o.kullanici_arayuz = kullanici_arayuz:yeni{
+        o:animasyon_yukle()
+        o.animasyon.secili = o.animasyon.durma
+        o.kullanici_arayuz = kullanici_arayuz:yeni {
             oyuncu = o,
             yer = vektor2(10, love.graphics.getHeight() - 50)
         }
@@ -53,11 +53,11 @@ function oyuncu:yeni(o)
 
     if o.oyuncu_tip == oyuncu.ISTEMCI then
         o:animasyon_yukle()
-	    o.animasyon.secili = o.animasyon.durma
+        o.animasyon.secili = o.animasyon.durma
     end
 
     sinyal_fonksiyon_bagla("Konsol.durum_degisti", function(durum)
-	o.yonetilebilir = not durum
+        o.yonetilebilir = not durum
     end)
 
     return o
@@ -69,30 +69,44 @@ end
 
 setmetatable(oyuncu, { __call = oyuncu.yeni })
 
+-- oyuncunun merkezine gore x
 function oyuncu:yerelx(bideger)
-    return self.yer.x + bideger
+    return self.yer.x + self.boyut.x / 2 + bideger
 end
 
+-- oyuncunun merkezine gore y
 function oyuncu:yerely(bideger)
-    return self.yer.y + bideger
+    return self.yer.y + self.boyut.y / 2 + bideger
 end
 
 function oyuncu:animasyon_yukle()
     self.animasyon.resim = love.graphics.newImage("cizim/ast.png")
-    self.animasyon.resim:setFilter("nearest","nearest")
-   
-    local grid =  anim8.newGrid(32, 32, self.animasyon.resim:getWidth(), self.animasyon.resim:getHeight())
-    self.boyut = vektor2(32, 32)
-    self.animasyon.kosma = anim8.newAnimation(grid("1-8",2), 0.1)
-    self.animasyon.durma = anim8.newAnimation(grid("1-8",1), 0.1)
+    self.animasyon.resim:setFilter("nearest", "nearest")
+
+    local grid = anim8.newGrid(32, 48, self.animasyon.resim:getWidth(), self.animasyon.resim:getHeight())
+    self.animasyon.kosma = anim8.newAnimation(grid("1-8", 2), 0.1)
+    self.animasyon.durma = anim8.newAnimation(grid("1-8", 1), 0.1)
+    self.animasyon.secili = self.animasyon.durma
+    self.boyut = vektor2(32, 48)
 end
 
 function oyuncu:animasyon_guncelle(dt)
     self.animasyon.secili:update(dt)
+    if self.animasyon.yon == -1 then
+        self.animasyon.secili.flippedH = true
+    else
+        self.animasyon.secili.flippedH = false
+    end
 end
 
 function oyuncu:animasyon_ciz()
-    self.animasyon.secili:draw(self.animasyon.resim, self.yer.x, self.yer.y, 0, self.animasyon.yon * 2 ,2,16,16)
+    self.animasyon.secili:draw(
+        self.animasyon.resim,
+        self.yer.x,
+        self.yer.y,
+        0
+    )
+    love.graphics.rectangle("line", self.yer.x, self.yer.y, self.boyut.x, self.boyut.y)
 end
 
 local function tustan_sayi(tus)
@@ -117,7 +131,6 @@ function oyuncu:guncelle(dt)
         end
 
         self.animasyon.secili = self.animasyon.kosma
-
         if self.hareket_vektor.x ~= 0 then
             self.animasyon.yon = self.hareket_vektor.x
         end
@@ -141,7 +154,8 @@ function oyuncu:guncelle(dt)
 end
 
 function oyuncu:ciz()
-    love.graphics.print(self.isim, self:yerelx(-20),self:yerely(-32))
+    local genislik = love.graphics.getFont():getWidth(self.isim)
+    love.graphics.print(self.isim, self:yerelx(-genislik / 2), self:yerely(-self.boyut.y))
     self:animasyon_ciz()
     if self.sol_el ~= nil then
         self.sol_el:draw()
