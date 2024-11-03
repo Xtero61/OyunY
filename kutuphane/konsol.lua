@@ -15,7 +15,9 @@ Konsol.metin.zamanlayici = zamanlayici.yeni{
     tekrar = false,
     arg = {Konsol.metin},
     tetik_fonksiyonu = function (metin)
-        metin.durum = false
+        if not Konsol.durum then
+            metin.durum = false
+        end
     end
 }
 
@@ -53,10 +55,11 @@ function Konsol:guncelle(dt)
     if love.keyboard.isPressed("escape") then -- konsol açıp kapama
         if Konsol.durum == true then
             Konsol.durum = false
-	    sinyal_ver("Konsol.durum_degisti", Konsol.durum)
+            Konsol.metin.zamanlayici:yeniden_kur()
+	        sinyal_ver("Konsol.durum_degisti", Konsol.durum)
         else
             Konsol.durum = true
-            Konsol.metin.zamanlayici:yeniden_kur()
+            Konsol.metin.durum = true
 	        sinyal_ver("Konsol.durum_degisti", Konsol.durum)
         end
     end
@@ -70,6 +73,9 @@ function Konsol:guncelle(dt)
         if love.keyboard.isDown("lctrl") and love.keyboard.isPressed("t") then -- yazışma kutucuğunu temizleme
             Konsol.metin.yazi = ""
             Konsol.metin.boyu = 14
+        end
+        if love.keyboard.isDown("lctrl") and love.keyboard.isPressed("v") then -- yapıştır
+            Konsol.yazi = Konsol.yazi .. love.system.getClipboardText()
         end
         if love.keyboard.isPressed("backspace") then -- yazılan yazının sonundaki harfi silme
             local bit_uzunlugu = utf8.offset(Konsol.yazi, -1)
@@ -112,11 +118,13 @@ end
 function Konsol.metin:metine_yazi_ekle(isim,yazi)
     Konsol.metin.yazi = Konsol.metin.yazi .. isim .." : " .. yazi .. "\n"
     Konsol.metin:metinin_boyunu_ayarlama()
+    Konsol.metin.durum = true
 end
 
 function Konsol.metin:metine_komut_yazi_ekle(komut)
     Konsol.metin.yazi = Konsol.metin.yazi .. komut .. "\n"
     Konsol.metin:metinin_boyunu_ayarlama()
+    Konsol.metin.durum = true
 end
 
 function Konsol.metin:metinin_boyunu_ayarlama()
@@ -125,8 +133,6 @@ function Konsol.metin:metinin_boyunu_ayarlama()
     else
         Konsol.metin.boyu = Konsol.metin.boyu - 14
     end
-    Konsol.metin.zamanlayici:yeniden_kur()
-    Konsol.metin.durum = true
 end
 
 function Konsol.ayrac:ayrac_cizgi()

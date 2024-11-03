@@ -114,6 +114,7 @@ function istemci:mesaj_isle(mesaj)
             konsol.metin:metine_yazi_ekle("[Sen]", mesaj[MESAJ_TIP_OZEL_2])
         else
             konsol.metin:metine_yazi_ekle(mesaj[MESAJ_TIP_OZEL_1], mesaj[MESAJ_TIP_OZEL_2])
+            konsol.metin.zamanlayici:yeniden_kur()
         end
     end
 end
